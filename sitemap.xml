@@ -49,7 +49,19 @@
         <priority>0.9</priority>
     </url>
     <url>
+        <loc>https://pharmvr.github.io/index.html?exp=10</loc>
+        <lastmod>2026-11-27</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.9</priority>
+    </url>
+    <url>
         <loc>https://pharmvr.github.io/index.html?exp=11</loc>
+        <lastmod>2026-11-27</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.9</priority>
+    </url>
+    <url>
+        <loc>https://pharmvr.github.io/index.html?exp=13</loc>
         <lastmod>2026-11-27</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.9</priority>
