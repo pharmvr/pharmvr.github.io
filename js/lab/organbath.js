@@ -24,12 +24,9 @@
     const LEVER = { px: 768, py: 230, threadX: 711, stylusX: 426 };
     const DRUM = { cx: 320, top: 36, bot: 268, r: 108 };
     const MAG = (LEVER.px - LEVER.stylusX) / (LEVER.px - LEVER.threadX); // ×6
-    const STYLUS_A = 78 * Math.PI / 180;    // where the stylus meets the drum
-    const DRUM_SPEED = 6 * Math.PI / 180;   // one visible face ≈ 28 s
-    const HISTORY = STYLUS_A + Math.PI / 2; // keep exactly one face of trace
     const PX_MM = 3.0;                      // drum pixels per mm of excursion
 
-    LAB.RIG = { BENCH, BATH, LEVER, DRUM, MAG, PX_MM, STYLUS_A };
+    LAB.RIG = { BENCH, BATH, LEVER, DRUM, MAG, PX_MM, STYLUS_A: LAB.Kymograph.STYLUS_A };
 
     class OrganBath extends LAB.LabEngine {
         /* ---------------- subclass hooks ---------------- */
@@ -53,18 +50,17 @@
                 { x: 470, y: LEVER.py - 26, w: 240, h: 34, label: 'Frontal writing lever — ×' + MAG.toFixed(0) },
                 { x: 388, y: 470, w: 300, h: 60, label: 'Reagent rack — click a vial to select it' }
             ];
+            this.kymo = new LAB.Kymograph({
+                cx: DRUM.cx, top: DRUM.top, bot: DRUM.bot, r: DRUM.r, benchY: BENCH,
+                channels: [{ baseline: LEVER.py, px: PX_MM, color: '#f8fafc' }]
+            });
             this.resetRig();
         }
 
         resetRig() {
             this.amp = 0;
             this.ampTarget = 0;
-            this.trace = [];
-            this.marks = [];
-            this.ticks = [];
-            this.rot = 0;
-            this.sampleT = 0;
-            this.tickT = 0;
+            if (this.kymo) this.kymo.reset();
             this.spontPhase = 0;
             this.spontGain = 1;
             this.spontTarget = 1;
@@ -88,7 +84,7 @@
 
         /** marks the drum, tints the bath and plays the plume. Returns the drug. */
         markAddition(d, dose) {
-            this.marks.push({ a: this.rot, label: `${d.short} ${dose}`, color: d.color });
+            this.kymo.mark(`${d.short} ${dose}`, d.color);
             this.tint = { color: d.color, a: 0.28 };
             this.cloud = { color: d.color, t: 0 };
             this.tw.add(2.2, e => { if (this.cloud) this.cloud.t = e; }, { onDone: () => { this.cloud = null; } });
@@ -126,24 +122,12 @@
 
         /* ---------------- per-frame ---------------- */
         updateRig(dt) {
-            this.rot += DRUM_SPEED * dt;
-
             const rate = this.ampTarget > this.amp ? 1.3 : 0.85;
             this.amp = M.approach(this.amp, this.ampTarget, rate, dt);
             this.spontGain = M.approach(this.spontGain, this.spontTarget, 1.1, dt);
             if (this.R.spont) this.spontPhase += dt * Math.PI * 2 / this.R.spont.period;
 
-            this.sampleT += dt;
-            if (this.sampleT >= 0.045) {
-                this.sampleT = 0;
-                this.trace.push({ a: this.rot, v: this.penValue });
-            }
-            while (this.trace.length && this.rot - this.trace[0].a > HISTORY) this.trace.shift();
-            while (this.marks.length && this.rot - this.marks[0].a > HISTORY) this.marks.shift();
-
-            this.tickT += dt;
-            if (this.tickT >= 10) { this.tickT = 0; this.ticks.push({ a: this.rot }); }
-            while (this.ticks.length && this.rot - this.ticks[0].a > HISTORY) this.ticks.shift();
+            this.kymo.update(dt, this.penValue);
 
             if (Math.random() < dt * 26) {
                 this.bubbles.push({ x: BATH.x - 16 + M.rand(-5, 5), y: BATH.bot - 20, r: M.rand(1.4, 3.4), v: M.rand(26, 46), w: M.rand(0.6, 1.6) });
@@ -161,115 +145,12 @@
 
         /* ---------------- drawing ---------------- */
         drawRig(ctx) {
-            this._kymograph(ctx);
+            this.kymo.draw(ctx);
             this._reservoir(ctx);
             this._bath(ctx);
             this._lever(ctx);
             this._rack(ctx);
             if (this.dragTool) this._pipette(ctx, this.dragTool.x, this.dragTool.y, -0.35);
-        }
-
-        /* --- smoked drum kymograph --- */
-        _kymograph(ctx) {
-            const { cx, top, bot, r } = DRUM;
-            const ry = r * 0.17;
-            ctx.save();
-
-            G.shadow(ctx, cx, BENCH + 2, 96, 11, 0.45);
-            G.metal(ctx, cx - 74, BENCH - 30, 148, 32, { tone: 'dark', r: 5 });
-            G.metal(ctx, cx - 13, bot - 8, 26, BENCH - bot - 22, { tone: 'steel', r: 3 });
-            G.led(ctx, cx + 50, BENCH - 14, 3.2, '#22c55e', true);
-            G.text(ctx, 'KYMOGRAPH', cx - 56, BENCH - 10, { size: 8.5, weight: 800, color: 'rgba(226,232,240,0.8)' });
-            for (let i = 0; i < 3; i++) G.screw(ctx, cx - 60 + i * 60, BENCH - 24, 2.4);
-
-            const bg = ctx.createLinearGradient(cx - r, 0, cx + r, 0);
-            bg.addColorStop(0, '#07070a'); bg.addColorStop(0.16, '#17171c');
-            bg.addColorStop(0.42, '#26262c'); bg.addColorStop(0.7, '#15151a');
-            bg.addColorStop(1, '#050507');
-            ctx.fillStyle = bg;
-            ctx.fillRect(cx - r, top, r * 2, bot - top);
-
-            ctx.save();
-            ctx.beginPath(); ctx.rect(cx - r, top, r * 2, bot - top); ctx.clip();
-            ctx.globalAlpha = 0.06;
-            for (let i = 0; i < 160; i++) {
-                const gx = cx - r + (i * 53) % (r * 2);
-                const gy = top + (i * 97) % (bot - top);
-                ctx.fillStyle = i % 2 ? '#ffffff' : '#000000';
-                ctx.fillRect(gx, gy, 2, 1);
-            }
-            ctx.globalAlpha = 1;
-            this._trace(ctx);
-            ctx.restore();
-
-            [top, bot].forEach((yy, k) => {
-                const g2 = ctx.createLinearGradient(cx - r, 0, cx + r, 0);
-                g2.addColorStop(0, '#5e4a16'); g2.addColorStop(0.3, '#d9b64b');
-                g2.addColorStop(0.55, '#f4e3a4'); g2.addColorStop(1, '#4a3a10');
-                ctx.fillStyle = g2;
-                ctx.beginPath(); ctx.ellipse(cx, yy, r, ry, 0, 0, Math.PI * 2); ctx.fill();
-                if (k === 0) {
-                    ctx.fillStyle = 'rgba(8,8,10,0.92)';
-                    ctx.beginPath(); ctx.ellipse(cx, yy, r * 0.82, ry * 0.8, 0, 0, Math.PI * 2); ctx.fill();
-                    G.metal(ctx, cx - 4, top - 26, 8, 30, { tone: 'chrome', r: 2 });
-                    ctx.fillStyle = '#b45309';
-                    ctx.beginPath(); ctx.ellipse(cx, top - 26, 11, 4, 0, 0, Math.PI * 2); ctx.fill();
-                }
-                ctx.strokeStyle = 'rgba(0,0,0,0.5)'; ctx.lineWidth = 1; ctx.stroke();
-            });
-
-            G.text(ctx, 'SMOKED DRUM · ' + (DRUM_SPEED * 180 / Math.PI).toFixed(0) + '°/s', cx, bot + 24,
-                { size: 9.5, align: 'center', weight: 800, color: '#e2e8f0', shadow: true });
-            ctx.restore();
-        }
-
-        /** white stylus trace wrapped onto the visible face of the rotating drum */
-        _trace(ctx) {
-            const { cx, bot, r } = DRUM;
-            const base = LEVER.py;
-            const onFace = a => Math.cos(a) > 0.045;
-            const sx = a => cx + Math.sin(a) * r;
-
-            ctx.strokeStyle = 'rgba(255,255,255,0.18)';
-            ctx.lineWidth = 0.8;
-            ctx.beginPath(); ctx.moveTo(cx - r, base); ctx.lineTo(cx + r, base); ctx.stroke();
-
-            ctx.strokeStyle = 'rgba(255,255,255,0.5)'; ctx.lineWidth = 1;
-            const footY = bot - 16;
-            ctx.beginPath(); ctx.moveTo(cx - r, footY); ctx.lineTo(cx + r, footY); ctx.stroke();
-            this.ticks.forEach(t => {
-                const a = STYLUS_A - (this.rot - t.a);
-                if (!onFace(a)) return;
-                const x = sx(a);
-                ctx.beginPath(); ctx.moveTo(x, footY); ctx.lineTo(x, footY - 6); ctx.stroke();
-            });
-
-            this.marks.forEach(m => {
-                const a = STYLUS_A - (this.rot - m.a);
-                if (!onFace(a)) return;
-                const x = sx(a);
-                ctx.strokeStyle = m.color; ctx.lineWidth = 1.6;
-                ctx.beginPath(); ctx.moveTo(x, bot - 30); ctx.lineTo(x, bot - 46); ctx.stroke();
-                ctx.save();
-                ctx.translate(x, bot - 50); ctx.rotate(-Math.PI / 2);
-                G.text(ctx, m.label, 0, 3.5, { size: 8.5, weight: 700, color: m.color });
-                ctx.restore();
-            });
-
-            ctx.strokeStyle = '#f8fafc';
-            ctx.lineWidth = 1.7;
-            ctx.lineJoin = 'round'; ctx.lineCap = 'round';
-            ctx.shadowColor = 'rgba(255,255,255,0.35)'; ctx.shadowBlur = 3;
-            ctx.beginPath();
-            let pen = false;
-            for (const s of this.trace) {
-                const a = STYLUS_A - (this.rot - s.a);
-                if (!onFace(a)) { pen = false; continue; }
-                const x = sx(a), y = base - s.v * PX_MM;
-                if (pen) ctx.lineTo(x, y); else { ctx.moveTo(x, y); pen = true; }
-            }
-            ctx.stroke();
-            ctx.shadowBlur = 0;
         }
 
         /* --- reservoir of physiological salt solution --- */

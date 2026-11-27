@@ -24,7 +24,11 @@ legacy `js/engines/*.js` dispatch automatically. The legacy engines are fallback
 experiments not yet rebuilt; don't edit them.
 
 **Script order in index.html** (dependencies load first):
-`core.js` → `rodent.js` → `engine.js` → `pharm.js` → `organbath.js` → `exp/*.js`
+`core.js` → `rodent.js` → `engine.js` → `pharm.js` → `kymograph.js` →
+`organbath.js` → `heartrig.js` → `exp/*.js`
+
+`organbath.js` reads `LAB.Kymograph.STYLUS_A` at load time, so `kymograph.js`
+must come before it.
 
 ## Framework
 
@@ -70,6 +74,29 @@ Then use: `markAddition(drug, dose)` (drum mark + bath tint + plume),
 `this.amp` is in **mm of lever excursion**; negative = relaxation.
 `this.mod` holds the current bath pre-treatment; `this.spontTarget` damps the rhythm.
 `this.drug` must be set — the reagent rack renders from it.
+
+### `LAB.Kymograph` (js/lab/kymograph.js) — smoked drum
+
+Rotating cylinder with the trace wrapped onto the visible face. Owns its own
+`trace`/`marks`/`ticks`/`rot`; both rigs delegate to it.
+
+`new LAB.Kymograph({cx, top, bot, r, benchY, speed, label,
+channels: [{baseline, px, color, width}]})`, then `update(dt, value|[values])`,
+`mark(label, color)`, `reset()`, `draw(ctx)`.
+
+### `LAB.HeartRig` (js/lab/heartrig.js) — amphibian heart rig
+
+Cannula on a stand, suspended frog heart, heart lever (×5) and drum. Used by
+exps 12 and 20. `rig()` → `{perfused, baseRate, baseForce, baseFlow}`; when
+`perfused` is true it adds a constant-head reservoir, a drop counter and a
+second drum channel for coronary outflow (and scales the force channel down so
+the two traces don't collide).
+
+Call `initHeart()`, `resetHeart()`, `updateHeart(dt)`, `drawHeart(ctx)` from the
+matching lifecycle methods. Drive the heart with `rateTarget`, `forceTarget`,
+`flowTarget` and `arrest` (`null` | `'systole'` | `'diastole'`); the rig supplies
+the beat waveform, the reagent rack, the pipette and `drawReadout(ctx)`.
+Override `pipetteDropped()`.
 
 ### `LAB.PHARM` (js/lab/pharm.js) — quantitative analysis
 
@@ -124,8 +151,12 @@ Also: `LAB.M` (clamp lerp rand randn gauss approach smooth noise1 mean sem **lin
 
 ## Status
 
-Built (21): 1 2 3 5 6 7 8 9 10 11 13 14 15 16 17 22 23 24 25 26 31
-Remaining (10): 4 12 18 19 20 21 27 28 29 30
+Built (23): 1 2 3 5 6 7 8 9 10 11 12 13 14 15 16 17 20 22 23 24 25 26 31
+Remaining (8): 4 18 19 21 27 28 29 30
 
-Exps 12, 18, 19, 20 are the cardiovascular group and need a new perfusion/BP rig —
-the one remaining apparatus investment. Everything else reuses what exists.
+Exps 18 (arterial BP) and 19 (Dale's vasoperfusion) still need their own
+preparations, but can reuse `LAB.Kymograph` for the tracing. Exps 4, 21, 27, 28,
+29 and 30 are assorted small rigs.
+
+Once 4, 21, 27–30 are rebuilt, the whole legacy `js/engines/` layer and about
+3 MB of JPEG backdrops can be deleted — they are only referenced from there.
