@@ -586,6 +586,45 @@
             ctx.stroke();
             ctx.fillStyle = 'rgba(255,255,255,0.32)';
             ctx.beginPath(); ctx.ellipse(x - ww * 0.32, topY + len * 0.4, ww * 0.15, len * 0.26, 0, 0, Math.PI * 2); ctx.fill();
+        },
+
+        /** oestrogenised uterine horn — plump, smooth, translucent, no mesentery */
+        uterus(ctx, o) {
+            const { x, topY, hookY, len, w } = o;
+            const ww = w * 1.05;
+            const g = ctx.createLinearGradient(x - ww, 0, x + ww, 0);
+            g.addColorStop(0, '#a8737a'); g.addColorStop(0.26, '#e0a8ae');
+            g.addColorStop(0.5, '#f3cbd0'); g.addColorStop(0.76, '#d095a0'); g.addColorStop(1, '#96646d');
+            ctx.fillStyle = g;
+            ctx.beginPath();
+            ctx.moveTo(x - ww * 0.4, topY);
+            ctx.bezierCurveTo(x - ww, topY + len * 0.22, x - ww, hookY - len * 0.22, x - ww * 0.4, hookY);
+            ctx.lineTo(x + ww * 0.4, hookY);
+            ctx.bezierCurveTo(x + ww, hookY - len * 0.22, x + ww, topY + len * 0.22, x + ww * 0.4, topY);
+            ctx.closePath();
+            ctx.fill();
+            ctx.strokeStyle = 'rgba(130,80,88,0.45)'; ctx.lineWidth = 0.8; ctx.stroke();
+
+            // longitudinal myometrial fibres
+            ctx.strokeStyle = 'rgba(165,105,115,0.26)'; ctx.lineWidth = 0.7;
+            for (let i = -2; i <= 2; i++) {
+                const fx = x + i * ww * 0.26;
+                ctx.beginPath();
+                ctx.moveTo(fx, topY + 4);
+                ctx.quadraticCurveTo(fx + ww * 0.08, topY + len * 0.5, fx, hookY - 4);
+                ctx.stroke();
+            }
+            // fine vasculature over the serosa
+            ctx.strokeStyle = 'rgba(200,110,120,0.4)'; ctx.lineWidth = 0.9;
+            for (let i = 0; i < 3; i++) {
+                const yy = topY + len * (0.2 + i * 0.28);
+                ctx.beginPath();
+                ctx.moveTo(x - ww * 0.5, yy);
+                ctx.quadraticCurveTo(x, yy + 5, x + ww * 0.45, yy - 3);
+                ctx.stroke();
+            }
+            ctx.fillStyle = 'rgba(255,255,255,0.4)';
+            ctx.beginPath(); ctx.ellipse(x - ww * 0.3, topY + len * 0.38, ww * 0.16, len * 0.28, 0, 0, Math.PI * 2); ctx.fill();
         }
     };
 
