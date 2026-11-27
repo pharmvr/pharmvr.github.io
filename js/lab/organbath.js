@@ -510,5 +510,84 @@
         pipetteDropped() {}
     }
 
+    /* ---------------- shared tissue painters ----------------
+     * Each takes the geometry the rig computes: { x, topY, hookY, len, w }.
+     * A subclass's drawTissue() normally just delegates to one of these.
+     */
+    LAB.TISSUE = {
+        /** striated skeletal strip, segmented by myotome inscriptions — frog rectus */
+        rectus(ctx, o) {
+            const { x, topY, hookY, len, w } = o;
+            const g = ctx.createLinearGradient(x - w, 0, x + w, 0);
+            g.addColorStop(0, '#8d4f4b'); g.addColorStop(0.3, '#c98a86');
+            g.addColorStop(0.5, '#dba9a3'); g.addColorStop(0.8, '#b06e69'); g.addColorStop(1, '#7c423f');
+            ctx.fillStyle = g;
+            ctx.beginPath();
+            ctx.moveTo(x - w * 0.45, topY);
+            ctx.bezierCurveTo(x - w, topY + len * 0.3, x - w, hookY - len * 0.3, x - w * 0.45, hookY);
+            ctx.lineTo(x + w * 0.45, hookY);
+            ctx.bezierCurveTo(x + w, hookY - len * 0.3, x + w, topY + len * 0.3, x + w * 0.45, topY);
+            ctx.closePath();
+            ctx.fill();
+            ctx.strokeStyle = 'rgba(90,40,38,0.5)'; ctx.lineWidth = 0.8; ctx.stroke();
+
+            ctx.strokeStyle = 'rgba(255,255,255,0.22)'; ctx.lineWidth = 1.1;
+            for (let i = 1; i < 5; i++) {
+                const yy = topY + len * (i / 5);
+                ctx.beginPath();
+                ctx.moveTo(x - w * 0.8, yy);
+                ctx.quadraticCurveTo(x, yy + 2.5, x + w * 0.8, yy);
+                ctx.stroke();
+            }
+            ctx.strokeStyle = 'rgba(120,50,48,0.28)'; ctx.lineWidth = 0.6;
+            for (let i = -2; i <= 2; i++) {
+                const fx = x + i * w * 0.3;
+                ctx.beginPath(); ctx.moveTo(fx, topY + 3); ctx.lineTo(fx, hookY - 3); ctx.stroke();
+            }
+            ctx.fillStyle = 'rgba(255,255,255,0.3)';
+            ctx.beginPath(); ctx.ellipse(x - w * 0.35, topY + len * 0.35, w * 0.14, len * 0.2, 0, 0, Math.PI * 2); ctx.fill();
+        },
+
+        /** intestinal segment with circular constrictions and a mesenteric border.
+         *  pale: true for guinea pig ileum, which is thinner and paler than rabbit. */
+        ileum(ctx, o, pale) {
+            const { x, topY, hookY, len, w } = o;
+            const ww = pale ? w * 0.86 : w;
+            const g = ctx.createLinearGradient(x - ww, 0, x + ww, 0);
+            if (pale) {
+                g.addColorStop(0, '#a8958c'); g.addColorStop(0.28, '#e3cfc4');
+                g.addColorStop(0.5, '#f5e6dc'); g.addColorStop(0.78, '#d5bcae'); g.addColorStop(1, '#9b857b');
+            } else {
+                g.addColorStop(0, '#9a8079'); g.addColorStop(0.28, '#d9bdb2');
+                g.addColorStop(0.5, '#eed6cb'); g.addColorStop(0.78, '#c7a79b'); g.addColorStop(1, '#8c7269');
+            }
+            ctx.fillStyle = g;
+            ctx.beginPath();
+            ctx.moveTo(x - ww * 0.6, topY);
+            ctx.bezierCurveTo(x - ww, topY + len * 0.25, x - ww, hookY - len * 0.25, x - ww * 0.6, hookY);
+            ctx.lineTo(x + ww * 0.6, hookY);
+            ctx.bezierCurveTo(x + ww, hookY - len * 0.25, x + ww, topY + len * 0.25, x + ww * 0.6, topY);
+            ctx.closePath();
+            ctx.fill();
+            ctx.strokeStyle = 'rgba(110,80,70,0.45)'; ctx.lineWidth = 0.8; ctx.stroke();
+
+            ctx.strokeStyle = 'rgba(130,95,85,0.3)'; ctx.lineWidth = 1.1;
+            for (let i = 1; i < 6; i++) {
+                const yy = topY + len * (i / 6);
+                ctx.beginPath();
+                ctx.moveTo(x - ww * 0.82, yy);
+                ctx.quadraticCurveTo(x, yy + 3, x + ww * 0.82, yy);
+                ctx.stroke();
+            }
+            ctx.strokeStyle = 'rgba(190,120,120,0.5)'; ctx.lineWidth = 1.6;
+            ctx.beginPath();
+            ctx.moveTo(x + ww * 0.5, topY + 4);
+            ctx.bezierCurveTo(x + ww * 0.78, topY + len * 0.35, x + ww * 0.72, hookY - len * 0.3, x + ww * 0.5, hookY - 4);
+            ctx.stroke();
+            ctx.fillStyle = 'rgba(255,255,255,0.32)';
+            ctx.beginPath(); ctx.ellipse(x - ww * 0.32, topY + len * 0.4, ww * 0.15, len * 0.26, 0, 0, Math.PI * 2); ctx.fill();
+        }
+    };
+
     LAB.OrganBath = OrganBath;
 })();

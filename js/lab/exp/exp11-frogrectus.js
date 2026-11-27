@@ -352,38 +352,7 @@
 
         draw(ctx) { this.drawRig(ctx); }
 
-        /** frog rectus: reddish striated strip segmented by myotome inscriptions */
-        drawTissue(ctx, o) {
-            const { x, topY, hookY, len, w } = o;
-            const g = ctx.createLinearGradient(x - w, 0, x + w, 0);
-            g.addColorStop(0, '#8d4f4b'); g.addColorStop(0.3, '#c98a86');
-            g.addColorStop(0.5, '#dba9a3'); g.addColorStop(0.8, '#b06e69'); g.addColorStop(1, '#7c423f');
-            ctx.fillStyle = g;
-            ctx.beginPath();
-            ctx.moveTo(x - w * 0.45, topY);
-            ctx.bezierCurveTo(x - w, topY + len * 0.3, x - w, hookY - len * 0.3, x - w * 0.45, hookY);
-            ctx.lineTo(x + w * 0.45, hookY);
-            ctx.bezierCurveTo(x + w, hookY - len * 0.3, x + w, topY + len * 0.3, x + w * 0.45, topY);
-            ctx.closePath();
-            ctx.fill();
-            ctx.strokeStyle = 'rgba(90,40,38,0.5)'; ctx.lineWidth = 0.8; ctx.stroke();
-
-            ctx.strokeStyle = 'rgba(255,255,255,0.22)'; ctx.lineWidth = 1.1;
-            for (let i = 1; i < 5; i++) {
-                const yy = topY + len * (i / 5);
-                ctx.beginPath();
-                ctx.moveTo(x - w * 0.8, yy);
-                ctx.quadraticCurveTo(x, yy + 2.5, x + w * 0.8, yy);
-                ctx.stroke();
-            }
-            ctx.strokeStyle = 'rgba(120,50,48,0.28)'; ctx.lineWidth = 0.6;
-            for (let i = -2; i <= 2; i++) {
-                const fx = x + i * w * 0.3;
-                ctx.beginPath(); ctx.moveTo(fx, topY + 3); ctx.lineTo(fx, hookY - 3); ctx.stroke();
-            }
-            ctx.fillStyle = 'rgba(255,255,255,0.3)';
-            ctx.beginPath(); ctx.ellipse(x - w * 0.35, topY + len * 0.35, w * 0.14, len * 0.2, 0, 0, Math.PI * 2); ctx.fill();
-        }
+        drawTissue(ctx, o) { LAB.TISSUE.rectus(ctx, o); }
     }
 
     LAB.register(11, FrogRectus);

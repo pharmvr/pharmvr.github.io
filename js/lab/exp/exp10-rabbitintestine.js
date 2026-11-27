@@ -358,42 +358,7 @@
 
         draw(ctx) { this.drawRig(ctx); }
 
-        /** rabbit ileum: pale pink-grey tube with a mesenteric border */
-        drawTissue(ctx, o) {
-            const { x, topY, hookY, len, w } = o;
-            const g = ctx.createLinearGradient(x - w, 0, x + w, 0);
-            g.addColorStop(0, '#9a8079'); g.addColorStop(0.28, '#d9bdb2');
-            g.addColorStop(0.5, '#eed6cb'); g.addColorStop(0.78, '#c7a79b'); g.addColorStop(1, '#8c7269');
-            ctx.fillStyle = g;
-            ctx.beginPath();
-            ctx.moveTo(x - w * 0.6, topY);
-            ctx.bezierCurveTo(x - w, topY + len * 0.25, x - w, hookY - len * 0.25, x - w * 0.6, hookY);
-            ctx.lineTo(x + w * 0.6, hookY);
-            ctx.bezierCurveTo(x + w, hookY - len * 0.25, x + w, topY + len * 0.25, x + w * 0.6, topY);
-            ctx.closePath();
-            ctx.fill();
-            ctx.strokeStyle = 'rgba(110,80,70,0.45)'; ctx.lineWidth = 0.8; ctx.stroke();
-
-            // circular muscle constrictions — tighter as the gut contracts
-            const rings = 6;
-            ctx.strokeStyle = 'rgba(130,95,85,0.3)'; ctx.lineWidth = 1.1;
-            for (let i = 1; i < rings; i++) {
-                const yy = topY + len * (i / rings);
-                ctx.beginPath();
-                ctx.moveTo(x - w * 0.82, yy);
-                ctx.quadraticCurveTo(x, yy + 3, x + w * 0.82, yy);
-                ctx.stroke();
-            }
-            // mesenteric border running down one side
-            ctx.strokeStyle = 'rgba(190,120,120,0.5)'; ctx.lineWidth = 1.6;
-            ctx.beginPath();
-            ctx.moveTo(x + w * 0.5, topY + 4);
-            ctx.bezierCurveTo(x + w * 0.78, topY + len * 0.35, x + w * 0.72, hookY - len * 0.3, x + w * 0.5, hookY - 4);
-            ctx.stroke();
-            // serosal sheen
-            ctx.fillStyle = 'rgba(255,255,255,0.32)';
-            ctx.beginPath(); ctx.ellipse(x - w * 0.32, topY + len * 0.4, w * 0.15, len * 0.26, 0, 0, Math.PI * 2); ctx.fill();
-        }
+        drawTissue(ctx, o) { LAB.TISSUE.ileum(ctx, o, false); }
     }
 
     LAB.register(10, RabbitIntestine);

@@ -305,23 +305,9 @@
         }
 
         /* ---------------- analysis ---------------- */
-        /** Hill plot by least squares: slope = nH, x-intercept = log EC50 */
         _fit(rows) {
-            if (rows.length < 3) return null;
-            const emax = Math.max(...rows.map(r => r.height)) * 1.02;
-            const xs = [], ys = [];
-            rows.forEach(r => {
-                const f = r.height / emax;
-                if (f > 0.03 && f < 0.97) {
-                    xs.push(Math.log10(r.molar));
-                    ys.push(Math.log10(f / (1 - f)));
-                }
-            });
-            if (xs.length < 3) return null;
-            const fit = M.linreg(xs, ys);
-            if (!fit.slope) return null;
-            const logEC50 = -fit.intercept / fit.slope;
-            return { emax, nH: fit.slope, logEC50, pD2: -logEC50, ec50M: Math.pow(10, logEC50), r2: fit.r2, xs, ys };
+            const f = LAB.PHARM.hillFit(rows.map(r => ({ conc: r.molar, resp: r.height })));
+            return f ? Object.assign(f, { ec50M: f.ec50 }) : null;
         }
 
         _conditions() {
@@ -443,31 +429,7 @@
 
         draw(ctx) { this.drawRig(ctx); }
 
-        drawTissue(ctx, o) {
-            const { x, topY, hookY, len, w } = o;
-            const g = ctx.createLinearGradient(x - w, 0, x + w, 0);
-            g.addColorStop(0, '#8d4f4b'); g.addColorStop(0.3, '#c98a86');
-            g.addColorStop(0.5, '#dba9a3'); g.addColorStop(0.8, '#b06e69'); g.addColorStop(1, '#7c423f');
-            ctx.fillStyle = g;
-            ctx.beginPath();
-            ctx.moveTo(x - w * 0.45, topY);
-            ctx.bezierCurveTo(x - w, topY + len * 0.3, x - w, hookY - len * 0.3, x - w * 0.45, hookY);
-            ctx.lineTo(x + w * 0.45, hookY);
-            ctx.bezierCurveTo(x + w, hookY - len * 0.3, x + w, topY + len * 0.3, x + w * 0.45, topY);
-            ctx.closePath();
-            ctx.fill();
-            ctx.strokeStyle = 'rgba(90,40,38,0.5)'; ctx.lineWidth = 0.8; ctx.stroke();
-            ctx.strokeStyle = 'rgba(255,255,255,0.22)'; ctx.lineWidth = 1.1;
-            for (let i = 1; i < 5; i++) {
-                const yy = topY + len * (i / 5);
-                ctx.beginPath();
-                ctx.moveTo(x - w * 0.8, yy);
-                ctx.quadraticCurveTo(x, yy + 2.5, x + w * 0.8, yy);
-                ctx.stroke();
-            }
-            ctx.fillStyle = 'rgba(255,255,255,0.3)';
-            ctx.beginPath(); ctx.ellipse(x - w * 0.35, topY + len * 0.35, w * 0.14, len * 0.2, 0, 0, Math.PI * 2); ctx.fill();
-        }
+        drawTissue(ctx, o) { LAB.TISSUE.rectus(ctx, o); }
     }
 
     LAB.register(13, AchCRC);
