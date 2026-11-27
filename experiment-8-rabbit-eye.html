@@ -1,0 +1,2982 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PharmVR — Exp 8: Effect of Drugs on Rabbit's Eye</title>
+  <style>
+    :root {
+      --bg-base: #090e14;
+      --bg-panel: #101823;
+      --bg-elevated: #162130;
+      --bg-hover: #1d2b3e;
+      --border-subtle: rgba(148, 163, 184, 0.14);
+      --border-strong: rgba(148, 163, 184, 0.28);
+      --text-primary: #f1f5f9;
+      --text-secondary: #94a3b8;
+      --text-muted: #64748b;
+      --accent-cyan: #38bdf8;
+      --accent-teal: #2dd4bf;
+      --accent-amber: #fbbf24;
+      --accent-rose: #fb7185;
+      --accent-violet: #a78bfa;
+      --accent-emerald: #34d399;
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --font-mono: "JetBrains Mono", "SF Mono", Menlo, Consolas, monospace;
+      --shadow-card: 0 12px 32px rgba(0, 0, 0, 0.38);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    html, body {
+      height: 100%;
+      background: radial-gradient(circle at 30% 10%, #132030 0%, var(--bg-base) 65%);
+      color: var(--text-primary);
+      font-family: var(--font-sans);
+      font-size: 13px;
+      line-height: 1.45;
+      overflow-x: hidden;
+    }
+
+    /* Layout Shell */
+    .app-shell {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      max-width: 1600px;
+      margin: 0 auto;
+    }
+
+    /* Top Clinical Header */
+    .top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 10px 20px;
+      background: rgba(16, 24, 35, 0.88);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-subtle);
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      flex-wrap: wrap;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-mark {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #0ea5e9, #14b8a6);
+      display: grid;
+      place-items: center;
+      box-shadow: 0 0 18px rgba(56, 189, 248, 0.35);
+      flex-shrink: 0;
+    }
+
+    .brand-title {
+      font-weight: 700;
+      font-size: 14px;
+      letter-spacing: -0.01em;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .brand-badge {
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      padding: 2px 7px;
+      border-radius: 999px;
+      background: rgba(56, 189, 248, 0.14);
+      color: var(--accent-cyan);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+    }
+
+    .brand-sub {
+      font-size: 11px;
+      color: var(--text-secondary);
+    }
+
+    /* Workflow Stepper */
+    .stepper {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(9, 14, 20, 0.55);
+      padding: 4px;
+      border-radius: 999px;
+      border: 1px solid var(--border-subtle);
+    }
+
+    .step-pill {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 11px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--text-muted);
+      transition: all 0.2s ease;
+    }
+
+    .step-pill .step-num {
+      width: 17px;
+      height: 17px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      font-size: 10px;
+      font-weight: 700;
+      background: rgba(148, 163, 184, 0.15);
+      color: var(--text-secondary);
+    }
+
+    .step-pill.active {
+      background: rgba(56, 189, 248, 0.16);
+      color: var(--text-primary);
+      box-shadow: inset 0 0 0 1px rgba(56, 189, 248, 0.35);
+    }
+
+    .step-pill.active .step-num {
+      background: var(--accent-cyan);
+      color: #06131f;
+    }
+
+    .step-pill.done {
+      color: var(--accent-emerald);
+    }
+
+    .step-pill.done .step-num {
+      background: rgba(52, 211, 153, 0.2);
+      color: var(--accent-emerald);
+    }
+
+    /* Header Actions */
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn {
+      appearance: none;
+      border: 1px solid var(--border-subtle);
+      background: var(--bg-elevated);
+      color: var(--text-primary);
+      font-family: inherit;
+      font-size: 12px;
+      font-weight: 500;
+      padding: 6px 12px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.16s ease;
+    }
+
+    .btn:hover {
+      background: var(--bg-hover);
+      border-color: var(--border-strong);
+    }
+
+    .btn:active {
+      transform: translateY(1px);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #0284c7, #0d9488);
+      border-color: rgba(56, 189, 248, 0.45);
+      color: #ffffff;
+      font-weight: 600;
+    }
+
+    .btn-primary:hover {
+      filter: brightness(1.1);
+      border-color: rgba(56, 189, 248, 0.75);
+    }
+
+    .btn-amber {
+      background: rgba(251, 191, 36, 0.14);
+      border-color: rgba(251, 191, 36, 0.38);
+      color: var(--accent-amber);
+    }
+
+    .btn-amber:hover {
+      background: rgba(251, 191, 36, 0.24);
+    }
+
+    .btn-sm {
+      padding: 4px 9px;
+      font-size: 11px;
+    }
+
+    /* Main Workspace */
+    .workspace {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 400px;
+      gap: 16px;
+      padding: 16px 20px 20px;
+      flex: 1;
+      align-items: start;
+    }
+
+    @media (max-width: 1160px) {
+      .workspace {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Left Stage Column */
+    .stage-column {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      min-width: 0;
+    }
+
+    /* Drug Vial Rack */
+    .vial-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 10px 14px;
+      background: var(--bg-panel);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-card);
+      flex-wrap: wrap;
+    }
+
+    .vial-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .vial-label {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      margin-right: 4px;
+    }
+
+    .vial-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 11px;
+      border-radius: 10px;
+      background: rgba(9, 14, 20, 0.65);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.16s ease;
+      font-family: inherit;
+    }
+
+    .vial-btn:hover {
+      border-color: var(--border-strong);
+      color: var(--text-primary);
+      background: rgba(22, 33, 48, 0.9);
+    }
+
+    .vial-btn.selected {
+      background: rgba(56, 189, 248, 0.12);
+      border-color: var(--accent-cyan);
+      color: var(--text-primary);
+      box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.25), 0 4px 14px rgba(0, 0, 0, 0.25);
+    }
+
+    .vial-dot {
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      box-shadow: 0 0 8px currentColor;
+    }
+
+    .vial-info {
+      text-align: left;
+      line-height: 1.2;
+    }
+
+    .vial-name {
+      font-size: 12px;
+      font-weight: 600;
+      display: block;
+    }
+
+    .vial-conc {
+      font-size: 10px;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+    }
+
+    /* Timer Strip */
+    .timer-widget {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 5px 10px;
+      background: rgba(9, 14, 20, 0.72);
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+    }
+
+    .timer-clock {
+      font-family: var(--font-mono);
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--accent-cyan);
+      min-width: 52px;
+      text-align: center;
+    }
+
+    .timer-meta {
+      font-size: 10px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .progress-track {
+      width: 72px;
+      height: 5px;
+      background: rgba(148, 163, 184, 0.16);
+      border-radius: 999px;
+      overflow: hidden;
+      margin-top: 3px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--accent-cyan), var(--accent-teal));
+      transition: width 0.15s linear;
+    }
+
+    /* Main Photorealistic Examination Stage */
+    .stage-card {
+      position: relative;
+      background: #0b1118;
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      box-shadow: var(--shadow-card);
+    }
+
+    .stage-header-overlay {
+      position: absolute;
+      top: 12px;
+      left: 14px;
+      right: 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    .eye-badge {
+      background: rgba(9, 14, 20, 0.76);
+      backdrop-filter: blur(8px);
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      padding: 6px 11px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .eye-badge-title {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .eye-badge-sub {
+      font-size: 11px;
+      color: var(--text-secondary);
+      font-family: var(--font-mono);
+    }
+
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    .hud-toast {
+      position: absolute;
+      bottom: 14px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(9, 14, 20, 0.88);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      color: var(--text-primary);
+      padding: 7px 14px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      pointer-events: none;
+      z-index: 12;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+      transition: opacity 0.25s ease, transform 0.25s ease;
+      white-space: nowrap;
+      max-width: 92%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .hud-toast.hidden {
+      opacity: 0;
+      transform: translate(-50%, 8px);
+    }
+
+    .canvas-wrap {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 920 / 450;
+      background: #0c121a;
+      touch-action: none;
+    }
+
+    #eyeCanvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    #eyeCanvas.tool-active {
+      cursor: none;
+    }
+
+    /* Sterile Instrument Tray */
+    .tool-tray {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      padding: 12px;
+      background: var(--bg-panel);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-card);
+    }
+
+    @media (max-width: 680px) {
+      .tool-tray {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    .tool-card {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      padding: 10px 12px;
+      background: rgba(9, 14, 20, 0.65);
+      border: 1px solid var(--border-subtle);
+      border-radius: 11px;
+      cursor: grab;
+      transition: all 0.18s ease;
+      text-align: left;
+      color: var(--text-primary);
+      font-family: inherit;
+    }
+
+    .tool-card:hover {
+      background: var(--bg-elevated);
+      border-color: var(--border-strong);
+      transform: translateY(-1px);
+    }
+
+    .tool-card.active {
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.16), rgba(45, 212, 191, 0.1));
+      border-color: var(--accent-cyan);
+      box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.35), 0 8px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .tool-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+    }
+
+    .tool-title {
+      font-size: 12.5px;
+      font-weight: 600;
+      display: block;
+    }
+
+    .tool-desc {
+      font-size: 11px;
+      color: var(--text-secondary);
+      display: block;
+      margin-top: 1px;
+    }
+
+    .kbd-hint {
+      position: absolute;
+      top: 7px;
+      right: 8px;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--text-muted);
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-subtle);
+      padding: 1px 5px;
+      border-radius: 4px;
+    }
+
+    /* Right Clinical Inspector Panel */
+    .inspector-panel {
+      background: var(--bg-panel);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-card);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .inspector-tabs {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      border-bottom: 1px solid var(--border-subtle);
+      background: rgba(9, 14, 20, 0.5);
+    }
+
+    .tab-btn {
+      appearance: none;
+      background: transparent;
+      border: none;
+      border-bottom: 2px solid transparent;
+      color: var(--text-secondary);
+      font-family: inherit;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 12px 8px;
+      cursor: pointer;
+      transition: all 0.16s ease;
+    }
+
+    .tab-btn:hover {
+      color: var(--text-primary);
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .tab-btn.active {
+      color: var(--accent-cyan);
+      border-bottom-color: var(--accent-cyan);
+      background: rgba(56, 189, 248, 0.06);
+    }
+
+    .tab-pane {
+      display: none;
+      padding: 14px;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .tab-pane.active {
+      display: flex;
+    }
+
+    /* Live Telemetry Cards */
+    .telemetry-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .telemetry-box {
+      background: rgba(9, 14, 20, 0.58);
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      padding: 9px 11px;
+    }
+
+    .telemetry-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    .telemetry-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11.5px;
+      padding: 2px 0;
+    }
+
+    .telemetry-val {
+      font-family: var(--font-mono);
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .pill-pos {
+      color: var(--accent-emerald);
+      background: rgba(52, 211, 153, 0.14);
+      padding: 1px 6px;
+      border-radius: 999px;
+      font-size: 10.5px;
+      font-weight: 600;
+    }
+
+    .pill-neg {
+      color: var(--accent-rose);
+      background: rgba(251, 113, 133, 0.16);
+      padding: 1px 6px;
+      border-radius: 999px;
+      font-size: 10.5px;
+      font-weight: 600;
+    }
+
+    .pill-pending {
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+    }
+
+    /* Observation Table */
+    .table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      background: rgba(9, 14, 20, 0.5);
+    }
+
+    table.obs-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 11px;
+    }
+
+    .obs-table th {
+      text-align: left;
+      padding: 7px 6px;
+      background: rgba(22, 33, 48, 0.85);
+      color: var(--text-secondary);
+      font-weight: 600;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .obs-table td {
+      padding: 7px 6px;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.08);
+      vertical-align: middle;
+    }
+
+    .obs-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .obs-table tr.row-active {
+      background: rgba(56, 189, 248, 0.08);
+    }
+
+    .obs-drug-name {
+      font-weight: 600;
+      color: var(--text-primary);
+      display: block;
+    }
+
+    .obs-drug-sub {
+      font-size: 9.5px;
+      color: var(--text-muted);
+    }
+
+    .cell-flash {
+      animation: cellPulse 0.8s ease;
+    }
+
+    @keyframes cellPulse {
+      0% { background: rgba(56, 189, 248, 0.35); }
+      100% { background: transparent; }
+    }
+
+    /* Pharmacology Mechanism Card */
+    .mech-card {
+      background: rgba(9, 14, 20, 0.55);
+      border: 1px solid var(--border-subtle);
+      border-radius: 11px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .mech-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .mech-title {
+      font-size: 13.5px;
+      font-weight: 700;
+    }
+
+    .mech-class {
+      font-size: 10px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: rgba(56, 189, 248, 0.14);
+      color: var(--accent-cyan);
+    }
+
+    .mech-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+
+    .mech-list li strong {
+      color: var(--text-primary);
+    }
+
+    .schematic-box {
+      background: rgba(9, 14, 20, 0.72);
+      border: 1px solid var(--border-subtle);
+      border-radius: 11px;
+      padding: 10px;
+    }
+
+    .schematic-caption {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--text-muted);
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    /* Viva Voce Quiz */
+    .viva-progress {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11.5px;
+      color: var(--text-secondary);
+    }
+
+    .viva-card {
+      background: rgba(9, 14, 20, 0.58);
+      border: 1px solid var(--border-subtle);
+      border-radius: 11px;
+      padding: 13px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .viva-q {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-primary);
+      line-height: 1.45;
+    }
+
+    .viva-options {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .viva-opt {
+      text-align: left;
+      padding: 9px 11px;
+      border-radius: 9px;
+      background: rgba(22, 33, 48, 0.7);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-primary);
+      font-family: inherit;
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .viva-opt:hover:not(:disabled) {
+      border-color: var(--accent-cyan);
+      background: rgba(56, 189, 248, 0.1);
+    }
+
+    .viva-opt.correct {
+      background: rgba(52, 211, 153, 0.16);
+      border-color: var(--accent-emerald);
+      color: #d1fae5;
+    }
+
+    .viva-opt.wrong {
+      background: rgba(251, 113, 133, 0.16);
+      border-color: var(--accent-rose);
+      color: #ffe4e6;
+    }
+
+    .viva-explain {
+      font-size: 11.5px;
+      line-height: 1.5;
+      padding: 9px 11px;
+      border-radius: 8px;
+      background: rgba(56, 189, 248, 0.08);
+      border-left: 3px solid var(--accent-cyan);
+      color: #cbd5e1;
+    }
+
+    .panel-footer-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      padding-top: 4px;
+    }
+
+    .protocol-note {
+      font-size: 11px;
+      color: var(--text-muted);
+      line-height: 1.4;
+      background: rgba(255, 255, 255, 0.025);
+      border: 1px solid var(--border-subtle);
+      padding: 8px 10px;
+      border-radius: 8px;
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <!-- Top Header -->
+    <header class="top-bar">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#06131f" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/>
+            <circle cx="12" cy="12" r="3"/>
+          </svg>
+        </div>
+        <div>
+          <div class="brand-title">
+            PharmVR
+            <span class="brand-badge">Exp 8 · Ocular Pharmacology</span>
+          </div>
+          <div class="brand-sub">Effect of Autonomic & Local Anaesthetic Drugs on Albino Rabbit's Eye</div>
+        </div>
+      </div>
+
+      <nav class="stepper" aria-label="Experiment Workflow">
+        <div class="step-pill active" id="step-1"><span class="step-num">1</span>Baseline</div>
+        <div class="step-pill" id="step-2"><span class="step-num">2</span>Instil Drug</div>
+        <div class="step-pill" id="step-3"><span class="step-num">3</span>Absorption</div>
+        <div class="step-pill" id="step-4"><span class="step-num">4</span>Post-Exam</div>
+      </nav>
+
+      <div class="header-actions">
+        <a href="index.html" class="btn btn-sm" title="Return to All Experiments Hub" style="text-decoration:none; color:var(--text-primary);">← Lab Hub</a>
+        <button class="btn btn-sm" id="btnSound" title="Toggle clinical sound cues">🔊 Sound On</button>
+        <button class="btn btn-sm" id="btnWashout" title="Flush eyes with saline & reset current trial">↺ Washout Eyes</button>
+        <button class="btn btn-sm btn-primary" id="btnQuickViva">Viva Voce</button>
+      </div>
+    </header>
+
+    <!-- Main Workspace -->
+    <main class="workspace">
+      <!-- Left / Center Stage -->
+      <section class="stage-column">
+        <!-- Drug Vial Rack & Timer -->
+        <div class="vial-bar">
+          <div class="vial-group" id="vialRack">
+            <span class="vial-label">Drug Vials</span>
+            <!-- Populated by JS -->
+          </div>
+
+          <div class="timer-widget">
+            <div>
+              <div class="timer-meta">Absorption (8:00)</div>
+              <div class="progress-track"><div class="progress-fill" id="absorptionBar"></div></div>
+            </div>
+            <div class="timer-clock" id="timerDisplay">00:00</div>
+            <button class="btn btn-sm btn-amber" id="btnFastForward" title="Instant 8-minute time-lapse">⏩ 8m Skip</button>
+          </div>
+        </div>
+
+        <!-- Dual Rabbit Eye Photorealistic Canvas -->
+        <div class="stage-card">
+          <div class="stage-header-overlay">
+            <div class="eye-badge">
+              <div class="eye-badge-title">
+                <span class="status-dot" id="leftDot" style="background:#38bdf8"></span>
+                Left Eye (OS) · Control
+              </div>
+              <div class="eye-badge-sub" id="leftStatusText">Baseline · Unmedicated</div>
+            </div>
+
+            <div class="eye-badge" style="text-align:right">
+              <div class="eye-badge-title" style="justify-content:flex-end">
+                Right Eye (OD) · Test
+                <span class="status-dot" id="rightDot" style="background:#fb7185"></span>
+              </div>
+              <div class="eye-badge-sub" id="rightStatusText">Baseline · Select &amp; instil drug</div>
+            </div>
+          </div>
+
+          <div class="canvas-wrap">
+            <canvas id="eyeCanvas"></canvas>
+          </div>
+
+          <div class="hud-toast" id="hudToast">
+            <span style="color:var(--accent-cyan)">●</span>
+            <span id="hudToastText">Select a tool below (1–4) to examine baseline pupil size, light reflex, and corneal reflex.</span>
+          </div>
+        </div>
+
+        <!-- Sterile Instrument Tray -->
+        <div class="tool-tray" id="toolTray">
+          <button class="tool-card" data-tool="dropper" draggable="false">
+            <span class="kbd-hint">1</span>
+            <div class="tool-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="m14 4 6 6"/>
+                <path d="M18.5 5.5a2.12 2.12 0 0 0-3-3L12 6l6 6 3.5-3.5a2.12 2.12 0 0 0-3-3Z"/>
+                <path d="m12 6-7.5 7.5a2 2 0 0 0-.5 1L3 21l6.5-1a2 2 0 0 0 1-.5L18 12"/>
+              </svg>
+            </div>
+            <div>
+              <span class="tool-title">Precision Dropper</span>
+              <span class="tool-desc">Click eye to instil 2 drops</span>
+            </div>
+          </button>
+
+          <button class="tool-card" data-tool="torch" draggable="false">
+            <span class="kbd-hint">2</span>
+            <div class="tool-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fbbf24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M18 6 6 18"/>
+                <path d="m15 3 6 6-3 3-6-6 3-3Z"/>
+                <path d="M3 21l4-4"/>
+                <path d="M9 3v2M3 9h2M5 5l1.5 1.5"/>
+              </svg>
+            </div>
+            <div>
+              <span class="tool-title">Clinical Pen-Torch</span>
+              <span class="tool-desc">Hover pupil for light reflex</span>
+            </div>
+          </button>
+
+          <button class="tool-card" data-tool="wisp" draggable="false">
+            <span class="kbd-hint">3</span>
+            <div class="tool-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#f1f5f9" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 20 15 9"/>
+                <path d="M15 9c1.5-2.5 4.2-4 5.5-2.5S19.5 10.5 17 12c-.8.4-1.6.1-2-.5Z"/>
+                <path d="M16.5 7.5c.8-.5 1.8-.3 2 .4"/>
+              </svg>
+            </div>
+            <div>
+              <span class="tool-title">Cotton Wisp</span>
+              <span class="tool-desc">Touch cornea for blink reflex</span>
+            </div>
+          </button>
+
+          <button class="tool-card" data-tool="ruler" draggable="false">
+            <span class="kbd-hint">4</span>
+            <div class="tool-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#2dd4bf" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2" y="7" width="20" height="10" rx="2"/>
+                <path d="M6 7v4M10 7v2.5M14 7v4M18 7v2.5"/>
+              </svg>
+            </div>
+            <div>
+              <span class="tool-title">Millimeter Ruler</span>
+              <span class="tool-desc">Align across pupil (mm)</span>
+            </div>
+          </button>
+        </div>
+      </section>
+
+      <!-- Right Clinical Inspector -->
+      <aside class="inspector-panel">
+        <div class="inspector-tabs">
+          <button class="tab-btn active" data-tab="obs">Observation</button>
+          <button class="tab-btn" data-tab="pharm">Pharmacology</button>
+          <button class="tab-btn" data-tab="viva">Viva Voce</button>
+        </div>
+
+        <!-- Tab 1: Observation Table & Live Telemetry -->
+        <div class="tab-pane active" id="tab-obs">
+          <div class="telemetry-grid">
+            <div class="telemetry-box">
+              <div class="telemetry-head">
+                <span>OS · Left (Control)</span>
+                <span id="telLeftPhase" style="color:var(--accent-cyan)">Baseline</span>
+              </div>
+              <div class="telemetry-row">
+                <span>Pupil Ø</span>
+                <span class="telemetry-val" id="telLeftPupil">— mm</span>
+              </div>
+              <div class="telemetry-row">
+                <span>Light Reflex</span>
+                <span id="telLeftLight"><span class="pill-pending">Untested</span></span>
+              </div>
+              <div class="telemetry-row">
+                <span>Corneal Reflex</span>
+                <span id="telLeftCorneal"><span class="pill-pending">Untested</span></span>
+              </div>
+            </div>
+
+            <div class="telemetry-box">
+              <div class="telemetry-head">
+                <span>OD · Right (Test)</span>
+                <span id="telRightPhase" style="color:var(--accent-rose)">Baseline</span>
+              </div>
+              <div class="telemetry-row">
+                <span>Pupil Ø</span>
+                <span class="telemetry-val" id="telRightPupil">— mm</span>
+              </div>
+              <div class="telemetry-row">
+                <span>Light Reflex</span>
+                <span id="telRightLight"><span class="pill-pending">Untested</span></span>
+              </div>
+              <div class="telemetry-row">
+                <span>Corneal Reflex</span>
+                <span id="telRightCorneal"><span class="pill-pending">Untested</span></span>
+              </div>
+            </div>
+          </div>
+
+          <div class="table-wrap">
+            <table class="obs-table">
+              <thead>
+                <tr>
+                  <th>Drug (Test Eye)</th>
+                  <th>Base Ø</th>
+                  <th>Post Ø</th>
+                  <th>Light</th>
+                  <th>Corneal</th>
+                </tr>
+              </thead>
+              <tbody id="obsTableBody">
+                <!-- Populated dynamically -->
+              </tbody>
+            </table>
+          </div>
+
+          <div class="protocol-note">
+            <strong>Clinical Protocol:</strong> Measure baseline readings with the <em>MM Ruler</em>, <em>Pen-Torch</em>, and <em>Cotton Wisp</em>. Instil 2 drops of <strong>Normal Saline</strong> in Left Eye (Control) and chosen <strong>Test Drug</strong> in Right Eye. Wait 8 min (or use <em>8m Skip</em>), then re-examine both eyes.
+          </div>
+
+          <div class="panel-footer-actions">
+            <button class="btn btn-sm" id="btnCaptureAll" title="Log current eye state into table">✓ Log Current Readings</button>
+            <button class="btn btn-sm" id="btnExportCSV">⬇ Export CSV</button>
+          </div>
+        </div>
+
+        <!-- Tab 2: Pharmacology & Receptor Mechanism -->
+        <div class="tab-pane" id="tab-pharm">
+          <div class="mech-card" id="mechCard">
+            <!-- Populated dynamically -->
+          </div>
+
+          <div class="schematic-box">
+            <div class="schematic-caption">Ocular Autonomic &amp; Sensory Innervation Map</div>
+            <svg viewBox="0 0 360 190" width="100%" height="190" id="receptorSvg" style="display:block">
+              <defs>
+                <marker id="arrCyan" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                  <path d="M 0 1 L 10 5 L 0 9 z" fill="#38bdf8"/>
+                </marker>
+                <marker id="arrAmber" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                  <path d="M 0 1 L 10 5 L 0 9 z" fill="#fbbf24"/>
+                </marker>
+                <marker id="arrRose" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                  <path d="M 0 1 L 10 5 L 0 9 z" fill="#fb7185"/>
+                </marker>
+              </defs>
+
+              <!-- Parasympathetic M3 Pathway -->
+              <rect id="nodePara" x="8" y="12" width="132" height="44" rx="8" fill="#132234" stroke="#38bdf8" stroke-width="1.3"/>
+              <text x="74" y="30" text-anchor="middle" fill="#e2e8f0" font-size="10.5" font-weight="700">Parasympathetic (CN III)</text>
+              <text x="74" y="45" text-anchor="middle" fill="#38bdf8" font-size="9.5">ACh → M₃ Receptor</text>
+              <line x1="140" y1="34" x2="200" y2="34" stroke="#38bdf8" stroke-width="1.8" marker-end="url(#arrCyan)"/>
+              <rect id="effSphincter" x="206" y="12" width="146" height="44" rx="8" fill="#101c2b" stroke="#38bdf8" stroke-opacity="0.5"/>
+              <text x="279" y="30" text-anchor="middle" fill="#f1f5f9" font-size="10.5" font-weight="700">Sphincter Pupillae</text>
+              <text x="279" y="45" text-anchor="middle" fill="#94a3b8" font-size="9.5">Circular muscle → Miosis</text>
+
+              <!-- Sympathetic Alpha-1 Pathway -->
+              <rect id="nodeSymp" x="8" y="72" width="132" height="44" rx="8" fill="#1f1c14" stroke="#fbbf24" stroke-width="1.3"/>
+              <text x="74" y="90" text-anchor="middle" fill="#e2e8f0" font-size="10.5" font-weight="700">Sympathetic (SCG)</text>
+              <text x="74" y="105" text-anchor="middle" fill="#fbbf24" font-size="9.5">NE → α₁ Adrenoceptor</text>
+              <line x1="140" y1="94" x2="200" y2="94" stroke="#fbbf24" stroke-width="1.8" marker-end="url(#arrAmber)"/>
+              <rect id="effDilator" x="206" y="72" width="146" height="44" rx="8" fill="#1b1812" stroke="#fbbf24" stroke-opacity="0.5"/>
+              <text x="279" y="90" text-anchor="middle" fill="#f1f5f9" font-size="10.5" font-weight="700">Dilator Pupillae</text>
+              <text x="279" y="105" text-anchor="middle" fill="#94a3b8" font-size="9.5">Radial fibers → Mydriasis</text>
+
+              <!-- Trigeminal Corneal Reflex Arc -->
+              <rect id="nodeSensory" x="8" y="132" width="132" height="44" rx="8" fill="#23141c" stroke="#fb7185" stroke-width="1.3"/>
+              <text x="74" y="150" text-anchor="middle" fill="#e2e8f0" font-size="10.5" font-weight="700">Corneal Sensory (CN V₁)</text>
+              <text x="74" y="165" text-anchor="middle" fill="#fb7185" font-size="9.5">Voltage-gated Na⁺ channels</text>
+              <line x1="140" y1="154" x2="200" y2="154" stroke="#fb7185" stroke-width="1.8" marker-end="url(#arrRose)"/>
+              <rect id="effOrbicularis" x="206" y="132" width="146" height="44" rx="8" fill="#1e1319" stroke="#fb7185" stroke-opacity="0.5"/>
+              <text x="279" y="150" text-anchor="middle" fill="#f1f5f9" font-size="10.5" font-weight="700">CN VII → Blink Reflex</text>
+              <text x="279" y="165" text-anchor="middle" fill="#94a3b8" font-size="9.5">Orbicularis oculi closure</text>
+            </svg>
+          </div>
+
+          <div class="protocol-note" id="clinicalPearl">
+            <strong>Clinical Pearl:</strong> Both Atropine and Ephedrine cause mydriasis, but only <strong>Atropine</strong> abolishes the pupillary light reflex because it blocks M₃ receptors on the sphincter pupillae (passive mydriasis).
+          </div>
+        </div>
+
+        <!-- Tab 3: Viva Voce Exam -->
+        <div class="tab-pane" id="tab-viva">
+          <div class="viva-progress">
+            <span id="vivaCounter">Question 1 of 5</span>
+            <span id="vivaScore" style="color:var(--accent-emerald);font-weight:600">Score: 0 / 5</span>
+          </div>
+
+          <div class="viva-card" id="vivaCard">
+            <!-- Populated dynamically -->
+          </div>
+
+          <div class="panel-footer-actions">
+            <button class="btn btn-sm" id="btnVivaPrev">← Prev</button>
+            <button class="btn btn-sm" id="btnVivaReset">↺ Restart Quiz</button>
+            <button class="btn btn-sm btn-primary" id="btnVivaNext">Next →</button>
+          </div>
+        </div>
+      </aside>
+    </main>
+  </div>
+
+  <script>
+    (() => {
+      "use strict";
+
+      /* =========================================================================
+       * 1. PHARMACOLOGY DATA MODEL (Clinically Verified ExPharm Exp 8 Parameters)
+       * ========================================================================= */
+      const PX_PER_MM = 11.5; // Calibrated exact scale: 11.5 logical px = 1.0 mm
+      const ABSORPTION_DURATION = 480; // 8 minutes = 480 simulated seconds
+      const BASELINE_PUPIL_MM = 6.0;
+
+      const DRUGS = {
+        saline: {
+          id: "saline",
+          name: "Normal Saline",
+          conc: "0.9% w/v",
+          shortName: "Saline 0.9%",
+          color: "#38bdf8",
+          fluidRgba: "rgba(186, 230, 253, 0.72)",
+          className: "Isotonic Control",
+          targetPupilMm: 6.0,
+          torchConstrictMm: 3.1,
+          lightReflex: true,
+          cornealReflex: true,
+          pathway: "none",
+          summary: "Isotonic NaCl control solution. Produces no autonomic or sensory alteration.",
+          mechanism: [
+            "<strong>Site of Action:</strong> None (physiological isotonic vehicle).",
+            "<strong>Pupil Diameter:</strong> Unchanged (~6.0 mm baseline).",
+            "<strong>Light Reflex:</strong> Intact (+) — brisk sphincter pupillae constriction via CN II → III.",
+            "<strong>Corneal Reflex:</strong> Intact (+) — immediate protective blink via CN V₁ → VII."
+          ],
+          pearl: "Always instil Normal Saline (0.9%) into the contralateral Left Eye (OS) to control for mechanical irritation, vehicle pH, and spontaneous pupil fluctuations."
+        },
+        atropine: {
+          id: "atropine",
+          name: "Atropine Sulphate",
+          conc: "1% w/v",
+          shortName: "Atropine 1%",
+          color: "#fb7185",
+          fluidRgba: "rgba(251, 113, 133, 0.65)",
+          className: "Antimuscarinic (Parasympatholytic)",
+          targetPupilMm: 10.5,
+          torchConstrictMm: 10.5, // Fixed! Light reflex abolished
+          lightReflex: false,
+          cornealReflex: true,
+          pathway: "para",
+          summary: "Competitive M₃ muscarinic antagonist causing pronounced passive mydriasis & cycloplegia.",
+          mechanism: [
+            "<strong>Site of Action:</strong> Competitive blockade of M₃ receptors on sphincter pupillae & ciliary muscle.",
+            "<strong>Pupil Diameter:</strong> Marked passive mydriasis (10.0–11.0 mm) due to unopposed sympathetic tone.",
+            "<strong>Light Reflex:</strong> <strong>ABOLISHED (−)</strong> — sphincter cannot respond to acetylcholine release.",
+            "<strong>Corneal Reflex:</strong> Intact (+) — trigeminal sensory & facial motor arcs unaffected."
+          ],
+          pearl: "Atropine causes <strong>passive mydriasis</strong> with <strong>loss of light reflex</strong> and cycloplegia. Effects can persist for days due to tight M₃ affinity."
+        },
+        ephedrine: {
+          id: "ephedrine",
+          name: "Ephedrine HCl",
+          conc: "0.5% w/v",
+          shortName: "Ephedrine 0.5%",
+          color: "#fbbf24",
+          fluidRgba: "rgba(251, 191, 36, 0.65)",
+          className: "Sympathomimetic (α₁ Agonist)",
+          targetPupilMm: 8.5,
+          torchConstrictMm: 5.0, // Constricts briskly! Light reflex retained
+          lightReflex: true,
+          cornealReflex: true,
+          pathway: "symp",
+          summary: "Mixed-acting sympathomimetic producing active mydriasis while preserving the light reflex.",
+          mechanism: [
+            "<strong>Site of Action:</strong> Promotes NE release & stimulates α₁ adrenoceptors on radial dilator pupillae.",
+            "<strong>Pupil Diameter:</strong> Moderate active mydriasis (8.0–9.0 mm).",
+            "<strong>Light Reflex:</strong> <strong>RETAINED (+)</strong> — parasympathetic M₃ sphincter pathway remains completely intact.",
+            "<strong>Corneal Reflex:</strong> Intact (+) — normal protective blink."
+          ],
+          pearl: "Key clinical distinction: Unlike Atropine, Ephedrine produces <strong>active mydriasis WITHOUT cycloplegia</strong> and <strong>preserves the pupillary light reflex</strong>."
+        },
+        physostigmine: {
+          id: "physostigmine",
+          name: "Physostigmine Salicylate",
+          conc: "0.5% w/v",
+          shortName: "Physostigmine 0.5%",
+          color: "#34d399",
+          fluidRgba: "rgba(52, 211, 153, 0.65)",
+          className: "Reversible AChE Inhibitor",
+          targetPupilMm: 2.5,
+          torchConstrictMm: 1.85,
+          lightReflex: true,
+          cornealReflex: true,
+          pathway: "para",
+          summary: "Indirect parasympathomimetic (miotic) that amplifies endogenous ACh at iris sphincter M₃ sites.",
+          mechanism: [
+            "<strong>Site of Action:</strong> Reversibly inhibits acetylcholinesterase (AChE) at neuroeffector junctions.",
+            "<strong>Pupil Diameter:</strong> Marked miosis (2.0–3.0 mm pinpoint constriction).",
+            "<strong>Light Reflex:</strong> Intact (+) — further subtle constriction from already miotic baseline.",
+            "<strong>Corneal Reflex:</strong> Intact (+) — sensory & blink arc preserved."
+          ],
+          pearl: "Physostigmine is a tertiary amine that penetrates the cornea well (unlike neostigmine) and lowers intraocular pressure by opening the trabecular meshwork."
+        },
+        lignocaine: {
+          id: "lignocaine",
+          name: "Lignocaine HCl",
+          conc: "2% w/v",
+          shortName: "Lignocaine 2%",
+          color: "#a78bfa",
+          fluidRgba: "rgba(167, 139, 250, 0.65)",
+          className: "Amide Local Anaesthetic",
+          targetPupilMm: 6.0,
+          torchConstrictMm: 3.1,
+          lightReflex: true,
+          cornealReflex: false,
+          pathway: "sensory",
+          summary: "Blocks voltage-gated Na⁺ channels in corneal sensory nerves, abolishing the blink reflex.",
+          mechanism: [
+            "<strong>Site of Action:</strong> Intracellular blockade of voltage-gated Na⁺ channels on corneal CN V₁ (nasociliary) afferents.",
+            "<strong>Pupil Diameter:</strong> Unaffected (~6.0 mm — no autonomic receptor activity).",
+            "<strong>Light Reflex:</strong> Intact (+) — optic nerve (CN II) & oculomotor (CN III) pathways remain unblocked.",
+            "<strong>Corneal Reflex:</strong> <strong>ABOLISHED (−)</strong> — touching cornea with cotton wisp elicits NO blink."
+          ],
+          pearl: "Surface anaesthesia of the rabbit cornea is a classical bioassay for local anaesthetics. Notice how spontaneous blinking may still occur occasionally while tactile corneal reflex is completely abolished."
+        }
+      };
+
+      const DRUG_ORDER = ["saline", "atropine", "ephedrine", "physostigmine", "lignocaine"];
+
+      const VIVA_QUESTIONS = [
+        {
+          q: "How do you clinically differentiate Atropine-induced mydriasis from Ephedrine-induced mydriasis in a rabbit's eye?",
+          options: [
+            "Atropine abolishes the pupillary light reflex, whereas Ephedrine retains the light reflex",
+            "Atropine abolishes the corneal reflex, whereas Ephedrine retains the corneal reflex",
+            "Ephedrine causes pinpoint miosis while Atropine causes mydriasis",
+            "Ephedrine blocks M₃ receptors while Atropine stimulates α₁ receptors"
+          ],
+          correct: 0,
+          explain: "Atropine blocks M₃ receptors on the sphincter pupillae (passive mydriasis), preventing light-induced constriction. Ephedrine stimulates α₁ receptors on the radial dilator (active mydriasis) while leaving the M₃ sphincter pathway intact, so the light reflex remains positive."
+        },
+        {
+          q: "After instilling Lignocaine HCl (2%) into the right eye, which clinical response is selectively abolished?",
+          options: [
+            "Pupillary light reflex (CN II → CN III)",
+            "Corneal blink reflex on touching with a cotton wisp (CN V₁ → CN VII)",
+            "Dilator pupillae α₁ contraction",
+            "Accommodation reflex"
+          ],
+          correct: 1,
+          explain: "Lignocaine blocks voltage-gated Na⁺ channels on free sensory nerve endings of the ophthalmic division of the trigeminal nerve (CN V₁) in the cornea, abolishing the afferent limb of the corneal reflex while leaving pupil size and light reflex untouched."
+        },
+        {
+          q: "Why are New Zealand White (albino) rabbits classically preferred for ocular pharmacology experiments?",
+          options: [
+            "They lack a sphincter pupillae muscle",
+            "Absence of melanin pigment prevents drug binding to iris melanin and gives high pupil-iris contrast",
+            "They do not possess a corneal blink reflex",
+            "Their eyes absorb drugs 100 times faster than pigmented mammals"
+          ],
+          correct: 1,
+          explain: "Pigmented irises contain melanin, which binds basic drugs like atropine and ephedrine (delaying onset and prolonging action). Albino rabbits lack melanin, ensuring reproducible pharmacokinetics and clear visual contrast of the vascular iris and pupil margin."
+        },
+        {
+          q: "Physostigmine (0.5%) produces pronounced miosis (2–3 mm) primarily by:",
+          options: [
+            "Directly blocking α₁ adrenoceptors on the dilator pupillae",
+            "Reversibly inhibiting acetylcholinesterase (AChE), increasing ACh at sphincter M₃ receptors",
+            "Blocking voltage-gated Ca²⁺ channels in the ciliary ganglion",
+            "Irreversibly destroying sympathetic nerve terminals"
+          ],
+          correct: 1,
+          explain: "Physostigmine is a lipid-soluble tertiary amine carbamate that reversibly inhibits AChE, increasing endogenous acetylcholine concentration at the iris sphincter M₃ muscarinic receptors to cause strong miosis."
+        },
+        {
+          q: "In the corneal reflex arc, which pair of cranial nerves serves as the afferent (sensory) and efferent (motor) limbs respectively?",
+          options: [
+            "Afferent: CN II (Optic) · Efferent: CN III (Oculomotor)",
+            "Afferent: CN V₁ (Ophthalmic Trigeminal) · Efferent: CN VII (Facial)",
+            "Afferent: CN III (Oculomotor) · Efferent: CN V₁ (Trigeminal)",
+            "Afferent: CN VII (Facial) · Efferent: CN VI (Abducens)"
+          ],
+          correct: 1,
+          explain: "Tactile stimulation of the cornea travels via the nasociliary branch of CN V₁ (afferent) to the brainstem, triggering bilateral contraction of orbicularis oculi via CN VII (efferent)."
+        }
+      ];
+
+      /* =========================================================================
+       * 2. SUBTLE PROCEDURAL AUDIO ENGINE (Zero External Files)
+       * ========================================================================= */
+      class SoundFX {
+        constructor() {
+          this.enabled = true;
+          this.ctx = null;
+        }
+        ensureCtx() {
+          if (!this.enabled) return null;
+          if (!this.ctx) {
+            const AC = window.AudioContext || window.webkitAudioContext;
+            if (AC) this.ctx = new AC();
+          }
+          if (this.ctx && this.ctx.state === "suspended") this.ctx.resume();
+          return this.ctx;
+        }
+        playDrop() {
+          const ctx = this.ensureCtx();
+          if (!ctx) return;
+          const now = ctx.currentTime;
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = "sine";
+          osc.frequency.setValueAtTime(520, now);
+          osc.frequency.exponentialRampToValueAtTime(1180, now + 0.085);
+          gain.gain.setValueAtTime(0.001, now);
+          gain.gain.exponentialRampToValueAtTime(0.11, now + 0.015);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.11);
+          osc.connect(gain).connect(ctx.destination);
+          osc.start(now);
+          osc.stop(now + 0.12);
+        }
+        playClick(freq = 680) {
+          const ctx = this.ensureCtx();
+          if (!ctx) return;
+          const now = ctx.currentTime;
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = "triangle";
+          osc.frequency.setValueAtTime(freq, now);
+          osc.frequency.exponentialRampToValueAtTime(freq * 0.5, now + 0.035);
+          gain.gain.setValueAtTime(0.07, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
+          osc.connect(gain).connect(ctx.destination);
+          osc.start(now);
+          osc.stop(now + 0.045);
+        }
+        playCapture() {
+          const ctx = this.ensureCtx();
+          if (!ctx) return;
+          const now = ctx.currentTime;
+          [660, 880].forEach((f, i) => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = "sine";
+            osc.frequency.setValueAtTime(f, now + i * 0.06);
+            gain.gain.setValueAtTime(0.06, now + i * 0.06);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.06 + 0.12);
+            osc.connect(gain).connect(ctx.destination);
+            osc.start(now + i * 0.06);
+            osc.stop(now + i * 0.06 + 0.13);
+          });
+        }
+      }
+
+      /* =========================================================================
+       * 3. SIMULATION STATE MACHINE
+       * ========================================================================= */
+      const createEyeState = (side, cx, cy) => ({
+        side, // "left" | "right"
+        cx,
+        cy,
+        drugId: null,
+        dropsInstilled: 0,
+        elapsedSimSec: 0,
+        onset: 0, // 0..1 sigmoidal absorption curve
+        pupilMm: BASELINE_PUPIL_MM,
+        pupilVel: 0,
+        blink: 0, // 0 open .. 1 closed
+        blinkTarget: 0,
+        blinkTimer: 2.2 + Math.random() * 3.5,
+        isBlinking: false,
+        blinkPhaseTime: 0,
+        blinkDuration: 0.22,
+        nictitating: 0, // third eyelid sweep 0..1
+        lidRetract: 0, // gentle retraction when dropper hovers
+        torchIntensity: 0,
+        torchHoldTime: 0,
+        rulerHoldTime: 0,
+        wispCooldown: 0,
+        cornealRipples: [], // { r, maxR, alpha, color }
+        fallingDrops: [], // { x, y, vy, targetY, color }
+        wetnessBoost: 0,
+        // Captured clinical readings for current session
+        baseline: { pupil: null, light: null, corneal: null },
+        post: { pupil: null, light: null, corneal: null }
+      });
+
+      const LOGICAL_W = 920;
+      const LOGICAL_H = 450;
+
+      const state = {
+        selectedDrugId: "atropine",
+        activeTool: null, // "dropper" | "torch" | "wisp" | "ruler" | null
+        pointer: { x: LOGICAL_W / 2, y: LOGICAL_H / 2, inside: false, down: false },
+        eyes: {
+          left: createEyeState("left", 242, 232),
+          right: createEyeState("right", 678, 232)
+        },
+        // Master Observation Table data keyed by drugId
+        obsRecords: Object.fromEntries(
+          DRUG_ORDER.map((id) => [
+            id,
+            { basePupil: null, postPupil: null, light: null, corneal: null }
+          ])
+        ),
+        vivaIndex: 0,
+        vivaAnswers: new Array(VIVA_QUESTIONS.length).fill(null),
+        lastToastTime: 0
+      };
+
+      const sfx = new SoundFX();
+
+      /* =========================================================================
+       * 4. PHOTOREALISTIC PROCEDURAL CANVAS ENGINE
+       * ========================================================================= */
+      class RabbitEyeRenderer {
+        constructor(canvas) {
+          this.canvas = canvas;
+          this.ctx = canvas.getContext("2d");
+          this.dpr = Math.min(window.devicePixelRatio || 1, 2);
+          this.resize();
+          this.furBackdrop = this.generateFurBackdrop();
+          this.irisPatternSeed = this.generateIrisGeometry();
+          this.startTime = performance.now();
+        }
+
+        resize() {
+          this.canvas.width = Math.round(LOGICAL_W * this.dpr);
+          this.canvas.height = Math.round(LOGICAL_H * this.dpr);
+          this.ctx.setTransform(this.dpr, 0, 0, this.dpr, 0, 0);
+        }
+
+        /* Pre-render ultra-realistic albino rabbit white fur & periocular anatomy once */
+        generateFurBackdrop() {
+          const off = document.createElement("canvas");
+          off.width = LOGICAL_W;
+          off.height = LOGICAL_H;
+          const g = off.getContext("2d");
+
+          // Clinical dark macro examination background
+          const bg = g.createRadialGradient(LOGICAL_W / 2, LOGICAL_H / 2, 120, LOGICAL_W / 2, LOGICAL_H / 2, 560);
+          bg.addColorStop(0, "#151f2b");
+          bg.addColorStop(1, "#090e14");
+          g.fillStyle = bg;
+          g.fillRect(0, 0, LOGICAL_W, LOGICAL_H);
+
+          // Subtle stereomicroscope center divider
+          g.strokeStyle = "rgba(148, 163, 184, 0.14)";
+          g.lineWidth = 1;
+          g.setLineDash([4, 6]);
+          g.beginPath();
+          g.moveTo(LOGICAL_W / 2, 24);
+          g.lineTo(LOGICAL_W / 2, LOGICAL_H - 24);
+          g.stroke();
+          g.setLineDash([]);
+
+          // Render two rounded macro head/ocular patches (albino rabbit fur)
+          [state.eyes.left, state.eyes.right].forEach((eye) => {
+            g.save();
+            // Circular macro optical viewport clip
+            g.beginPath();
+            g.ellipse(eye.cx, eye.cy, 198, 178, 0, 0, Math.PI * 2);
+            g.clip();
+
+            // Base warm ivory-white albino rabbit fur/skin tone
+            const furBase = g.createRadialGradient(eye.cx, eye.cy - 12, 50, eye.cx, eye.cy, 215);
+            furBase.addColorStop(0, "#f5e3e1"); // subtle pink vascular skin right near socket
+            furBase.addColorStop(0.45, "#ece6e0");
+            furBase.addColorStop(0.82, "#dcd5cd");
+            furBase.addColorStop(1, "#b8b0a8");
+            g.fillStyle = furBase;
+            g.fillRect(eye.cx - 210, eye.cy - 190, 420, 380);
+
+            // Soft anatomical brow ridge & cheek contour shading
+            const contour = g.createLinearGradient(eye.cx, eye.cy - 180, eye.cx, eye.cy + 180);
+            contour.addColorStop(0, "rgba(120, 108, 102, 0.24)");
+            contour.addColorStop(0.28, "rgba(255, 255, 255, 0.18)");
+            contour.addColorStop(0.75, "rgba(180, 155, 150, 0.08)");
+            contour.addColorStop(1, "rgba(85, 72, 68, 0.34)");
+            g.fillStyle = contour;
+            g.fillRect(eye.cx - 210, eye.cy - 190, 420, 380);
+
+            // Deterministic pseudo-random generator for organic fur consistency
+            let seed = eye.side === "left" ? 1337 : 4242;
+            const rand = () => {
+              seed = (seed * 1664525 + 1013904223) % 4294967296;
+              return seed / 4294967296;
+            };
+
+            // Layer 4,200 directional fine white/ivory rabbit fur hairs radiating from socket
+            const isLeft = eye.side === "left";
+            for (let i = 0; i < 4200; i++) {
+              const ang = rand() * Math.PI * 2;
+              const dist = 76 + Math.pow(rand(), 0.72) * 142;
+              const x = eye.cx + Math.cos(ang) * dist * 1.12;
+              const y = eye.cy + Math.sin(ang) * dist * 0.96;
+
+              // Natural fur sweep flows outward and slightly laterally away from nose bridge
+              const flowAngle =
+                ang +
+                (isLeft ? -0.22 : 0.22) * Math.sin(ang) +
+                (rand() - 0.5) * 0.35;
+              const len = 10 + rand() * 17;
+
+              const shade = rand();
+              if (shade < 0.35) {
+                g.strokeStyle = `rgba(255, 253, 250, ${0.32 + rand() * 0.35})`;
+              } else if (shade < 0.72) {
+                g.strokeStyle = `rgba(225, 218, 210, ${0.28 + rand() * 0.32})`;
+              } else {
+                g.strokeStyle = `rgba(175, 162, 155, ${0.18 + rand() * 0.22})`;
+              }
+              g.lineWidth = 0.75 + rand() * 1.1;
+              g.beginPath();
+              g.moveTo(x, y);
+              const mx = x + Math.cos(flowAngle) * len * 0.55;
+              const my = y + Math.sin(flowAngle) * len * 0.55 + 1.2;
+              const ex = x + Math.cos(flowAngle) * len;
+              const ey = y + Math.sin(flowAngle) * len + 2.2;
+              g.quadraticCurveTo(mx, my, ex, ey);
+              g.stroke();
+            }
+
+            // Soft periocular pink skin halo directly around palpebral aperture
+            const halo = g.createRadialGradient(eye.cx, eye.cy, 62, eye.cx, eye.cy, 128);
+            halo.addColorStop(0, "rgba(226, 152, 156, 0.42)");
+            halo.addColorStop(0.55, "rgba(232, 178, 178, 0.16)");
+            halo.addColorStop(1, "rgba(232, 178, 178, 0)");
+            g.fillStyle = halo;
+            g.fillRect(eye.cx - 150, eye.cy - 140, 300, 280);
+
+            // Soft optical vignette rim
+            const vig = g.createRadialGradient(eye.cx, eye.cy, 138, eye.cx, eye.cy, 200);
+            vig.addColorStop(0, "rgba(0, 0, 0, 0)");
+            vig.addColorStop(0.78, "rgba(9, 14, 20, 0.18)");
+            vig.addColorStop(1, "rgba(9, 14, 20, 0.82)");
+            g.fillStyle = vig;
+            g.fillRect(eye.cx - 210, eye.cy - 190, 420, 380);
+            g.restore();
+
+            // Crisp optical viewport bezel ring
+            g.strokeStyle = "rgba(148, 163, 184, 0.22)";
+            g.lineWidth = 1.5;
+            g.beginPath();
+            g.ellipse(eye.cx, eye.cy, 198, 178, 0, 0, Math.PI * 2);
+            g.stroke();
+          });
+
+          return off;
+        }
+
+        /* Generate consistent radial stroma fibers & capillary loops for realistic albino iris */
+        generateIrisGeometry() {
+          const fibers = [];
+          let s = 90210;
+          const rand = () => {
+            s = (s * 1664525 + 1013904223) % 4294967296;
+            return s / 4294967296;
+          };
+          for (let i = 0; i < 110; i++) {
+            const angle = (i / 110) * Math.PI * 2 + (rand() - 0.5) * 0.04;
+            fibers.push({
+              angle,
+              curve: (rand() - 0.5) * 0.18,
+              width: 0.7 + rand() * 1.4,
+              alpha: 0.16 + rand() * 0.28,
+              bright: rand() > 0.45
+            });
+          }
+          const vessels = [];
+          for (let i = 0; i < 30; i++) {
+            const angle = (i / 30) * Math.PI * 2 + (rand() - 0.5) * 0.14;
+            vessels.push({
+              angle,
+              wiggle: (rand() - 0.5) * 0.26,
+              width: 0.65 + rand() * 0.9,
+              alpha: 0.22 + rand() * 0.26
+            });
+          }
+          const scleralVessels = [];
+          for (let i = 0; i < 16; i++) {
+            const sideSign = i % 2 === 0 ? 1 : -1;
+            const yOff = (rand() - 0.5) * 55;
+            scleralVessels.push({ sideSign, yOff, bend: (rand() - 0.5) * 24, len: 26 + rand() * 26 });
+          }
+          return { fibers, vessels, scleralVessels };
+        }
+
+        render(now) {
+          const ctx = this.ctx;
+          ctx.clearRect(0, 0, LOGICAL_W, LOGICAL_H);
+
+          // 1. Draw pre-rendered fur macro backdrop
+          ctx.drawImage(this.furBackdrop, 0, 0);
+
+          // 2. Render both photorealistic eyes
+          this.drawEye(state.eyes.left, now);
+          this.drawEye(state.eyes.right, now);
+
+          // 3. Render volumetric pen-torch light cone if active
+          if (state.activeTool === "torch" && state.pointer.inside) {
+            this.drawTorchBeam(ctx, state.pointer.x, state.pointer.y);
+          }
+
+          // 4. Render active clinical instrument attached to cursor
+          if (state.activeTool && state.pointer.inside) {
+            this.drawActiveTool(ctx, state.activeTool, state.pointer.x, state.pointer.y, now);
+          }
+        }
+
+        drawEye(eye, now) {
+          const ctx = this.ctx;
+          const { cx, cy } = eye;
+          const isLeft = eye.side === "left";
+          const medialDir = isLeft ? 1 : -1; // nose bridge is toward center of canvas
+
+          const irisR = 7.35 * PX_PER_MM; // ~84.5 px (realistic ~14.7 mm rabbit cornea)
+          const pupilR = (eye.pupilMm / 2) * PX_PER_MM;
+          const openAmt = 1 - eye.blink; // 1 = wide open, 0 = closed
+
+          // Aperture geometry (almond-shaped rabbit palpebral fissure)
+          const halfW = 114;
+          const upperLift = (74 + eye.lidRetract * 10) * openAmt;
+          const lowerDrop = (68 + eye.lidRetract * 16) * openAmt;
+          const closedLineY = cy + 8;
+
+          const upperCtrlY = closedLineY - (closedLineY - (cy - upperLift)) * openAmt - (1 - openAmt) * 0;
+          const lowerCtrlY = closedLineY + (cy + lowerDrop - closedLineY) * openAmt;
+
+          const makeAperturePath = () => {
+            ctx.beginPath();
+            ctx.moveTo(cx - halfW, cy + 4);
+            ctx.bezierCurveTo(
+              cx - halfW * 0.55, cy - upperLift * 1.15 - (1 - openAmt) * (-8),
+              cx + halfW * 0.55, cy - upperLift * 1.15 - (1 - openAmt) * (-8),
+              cx + halfW, cy + 4
+            );
+            ctx.bezierCurveTo(
+              cx + halfW * 0.55, cy + lowerDrop * 1.12,
+              cx - halfW * 0.55, cy + lowerDrop * 1.12,
+              cx - halfW, cy + 4
+            );
+            ctx.closePath();
+          };
+
+          // --- A. EYEBALL CLIPPED TO PALPEBRAL APERTURE ---
+          ctx.save();
+          makeAperturePath();
+          ctx.clip();
+
+          // A1. Glossy Sclera (ivory white with soft pink conjunctival peripheral tint)
+          const scleraGrad = ctx.createRadialGradient(cx, cy, irisR * 0.75, cx, cy, halfW * 1.1);
+          scleraGrad.addColorStop(0, "#faf6f5");
+          scleraGrad.addColorStop(0.68, "#f3e5e6");
+          scleraGrad.addColorStop(1, "#dfa9b0");
+          ctx.fillStyle = scleraGrad;
+          ctx.fillRect(cx - halfW - 10, cy - 105, (halfW + 10) * 2, 210);
+
+          // Delicate subconjunctival scleral capillaries
+          ctx.lineWidth = 0.8;
+          this.irisPatternSeed.scleralVessels.forEach((v) => {
+            const sx = cx + v.sideSign * (halfW - 6);
+            const sy = cy + v.yOff;
+            const ex = cx + v.sideSign * (irisR - 4);
+            const ey = cy + v.yOff * 0.72;
+            ctx.strokeStyle = "rgba(196, 68, 86, 0.24)";
+            ctx.beginPath();
+            ctx.moveTo(sx, sy);
+            ctx.quadraticCurveTo((sx + ex) / 2, (sy + ey) / 2 + v.bend * 0.4, ex, ey);
+            ctx.stroke();
+          });
+
+          // A2. Medial Caruncle & Nictitating Membrane (Albino rabbit third eyelid!)
+          const medialX = cx + medialDir * (halfW - 6);
+          const nictSweep = 16 + eye.nictitating * 62;
+          ctx.save();
+          const nictGrad = ctx.createRadialGradient(medialX, cy + 6, 4, medialX - medialDir * nictSweep * 0.5, cy + 6, nictSweep + 14);
+          nictGrad.addColorStop(0, "rgba(228, 128, 142, 0.92)");
+          nictGrad.addColorStop(0.65, "rgba(244, 174, 182, 0.72)");
+          nictGrad.addColorStop(1, "rgba(255, 224, 228, 0.35)");
+          ctx.fillStyle = nictGrad;
+          ctx.beginPath();
+          ctx.moveTo(medialX + medialDir * 10, cy - 60);
+          ctx.quadraticCurveTo(
+            medialX - medialDir * nictSweep,
+            cy + 4,
+            medialX + medialDir * 10,
+            cy + 68
+          );
+          ctx.closePath();
+          ctx.fill();
+          ctx.restore();
+
+          // A3. ALBINO VASCULAR IRIS (Translucent pinkish-coral hemoglobin stroma)
+          ctx.save();
+          ctx.beginPath();
+          ctx.arc(cx, cy, irisR, 0, Math.PI * 2);
+          ctx.clip();
+
+          // Base translucent rose-pink iris gradient
+          const irisGrad = ctx.createRadialGradient(cx, cy, pupilR * 0.85, cx, cy, irisR);
+          irisGrad.addColorStop(0, "#d46a7a");
+          irisGrad.addColorStop(0.28, "#e38292");
+          irisGrad.addColorStop(0.65, "#cf6477");
+          irisGrad.addColorStop(0.88, "#a84459");
+          irisGrad.addColorStop(1, "#6f2a3a");
+          ctx.fillStyle = irisGrad;
+          ctx.fillRect(cx - irisR, cy - irisR, irisR * 2, irisR * 2);
+
+          // Radial iris dilator fibers (dynamically stretch/bunch with pupil diameter)
+          const radialSpan = Math.max(8, irisR - pupilR);
+          this.irisPatternSeed.fibers.forEach((f) => {
+            const x0 = cx + Math.cos(f.angle) * (pupilR + 1);
+            const y0 = cy + Math.sin(f.angle) * (pupilR + 1);
+            const midR = pupilR + radialSpan * 0.52;
+            const xm = cx + Math.cos(f.angle + f.curve * 0.25) * midR;
+            const ym = cy + Math.sin(f.angle + f.curve * 0.25) * midR;
+            const x1 = cx + Math.cos(f.angle) * (irisR - 2);
+            const y1 = cy + Math.sin(f.angle) * (irisR - 2);
+
+            ctx.strokeStyle = f.bright
+              ? `rgba(255, 206, 214, ${f.alpha})`
+              : `rgba(148, 42, 62, ${f.alpha * 0.9})`;
+            ctx.lineWidth = f.width;
+            ctx.beginPath();
+            ctx.moveTo(x0, y0);
+            ctx.quadraticCurveTo(xm, ym, x1, y1);
+            ctx.stroke();
+          });
+
+          // Fine crimson radial capillary loops (characteristic of albino rabbit iris)
+          this.irisPatternSeed.vessels.forEach((v) => {
+            const rStart = irisR - 3;
+            const rEnd = pupilR + radialSpan * 0.18;
+            ctx.strokeStyle = `rgba(182, 32, 56, ${v.alpha})`;
+            ctx.lineWidth = v.width;
+            ctx.beginPath();
+            ctx.moveTo(cx + Math.cos(v.angle) * rStart, cy + Math.sin(v.angle) * rStart);
+            ctx.quadraticCurveTo(
+              cx + Math.cos(v.angle + v.wiggle) * (pupilR + radialSpan * 0.55),
+              cy + Math.sin(v.angle + v.wiggle) * (pupilR + radialSpan * 0.55),
+              cx + Math.cos(v.angle + v.wiggle * 0.4) * rEnd,
+              cy + Math.sin(v.angle + v.wiggle * 0.4) * rEnd
+            );
+            ctx.stroke();
+          });
+
+          // Collarette ring (anastomotic arterial circle dividing pupillary & ciliary zones)
+          const collaretteR = pupilR + radialSpan * 0.34;
+          ctx.strokeStyle = "rgba(255, 195, 204, 0.34)";
+          ctx.lineWidth = 1.6;
+          ctx.beginPath();
+          for (let a = 0; a <= Math.PI * 2 + 0.1; a += 0.14) {
+            const wobble = Math.sin(a * 11) * 1.8 + Math.cos(a * 7) * 1.2;
+            const px = cx + Math.cos(a) * (collaretteR + wobble);
+            const py = cy + Math.sin(a) * (collaretteR + wobble);
+            if (a === 0) ctx.moveTo(px, py);
+            else ctx.lineTo(px, py);
+          }
+          ctx.closePath();
+          ctx.stroke();
+
+          // Limbal dark translucent border ring
+          const limbus = ctx.createRadialGradient(cx, cy, irisR - 11, cx, cy, irisR + 1);
+          limbus.addColorStop(0, "rgba(95, 32, 46, 0)");
+          limbus.addColorStop(0.7, "rgba(86, 28, 42, 0.38)");
+          limbus.addColorStop(1, "rgba(60, 18, 28, 0.65)");
+          ctx.fillStyle = limbus;
+          ctx.fillRect(cx - irisR, cy - irisR, irisR * 2, irisR * 2);
+
+          // A4. ALBINO PUPIL (Deep burgundy-ruby choroidal red reflex!)
+          const redGlow = eye.torchIntensity; // 0..1 intensifies glowing ruby fundus reflex
+          const pupilGrad = ctx.createRadialGradient(
+            cx - pupilR * 0.12,
+            cy - pupilR * 0.12,
+            pupilR * 0.08,
+            cx,
+            cy,
+            pupilR + 2
+          );
+          const centerR = Math.round(138 + redGlow * 112);
+          const centerG = Math.round(24 + redGlow * 48);
+          const centerB = Math.round(36 + redGlow * 34);
+          pupilGrad.addColorStop(0, `rgb(${centerR}, ${centerG}, ${centerB})`);
+          pupilGrad.addColorStop(0.55, `rgb(${Math.round(92 + redGlow * 80)}, ${Math.round(14 + redGlow * 22)}, ${Math.round(22 + redGlow * 18)})`);
+          pupilGrad.addColorStop(0.92, "#3a0912");
+          pupilGrad.addColorStop(1, "#26050a");
+
+          ctx.fillStyle = pupilGrad;
+          ctx.beginPath();
+          ctx.arc(cx, cy, pupilR, 0, Math.PI * 2);
+          ctx.fill();
+
+          // Subtle pupil ruff / margin depth shadow
+          ctx.strokeStyle = "rgba(75, 14, 24, 0.65)";
+          ctx.lineWidth = 1.6;
+          ctx.beginPath();
+          ctx.arc(cx, cy, pupilR + 0.5, 0, Math.PI * 2);
+          ctx.stroke();
+
+          ctx.restore(); // end iris clip
+
+          // A5. CORNEAL DOME SPECULAR & FLUID RIPPLES
+          // Curved studio light reflection (Purkinje image I)
+          ctx.save();
+          ctx.translate(cx - 26, cy - 28);
+          ctx.rotate(-0.42);
+          const spec1 = ctx.createLinearGradient(-22, -10, 22, 12);
+          spec1.addColorStop(0, "rgba(255, 255, 255, 0.72)");
+          spec1.addColorStop(0.6, "rgba(255, 255, 255, 0.25)");
+          spec1.addColorStop(1, "rgba(255, 255, 255, 0)");
+          ctx.fillStyle = spec1;
+          ctx.beginPath();
+          ctx.ellipse(0, 0, 23, 11, 0, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.restore();
+
+          // Secondary crisp pinpoint reflection
+          ctx.fillStyle = "rgba(255, 255, 255, 0.85)";
+          ctx.beginPath();
+          ctx.arc(cx + 28, cy + 24, 3.6, 0, Math.PI * 2);
+          ctx.fill();
+
+          // Live parallax corneal Purkinje glint from Pen-Torch
+          if (eye.torchIntensity > 0.03) {
+            const dx = (state.pointer.x - cx) * 0.26;
+            const dy = (state.pointer.y - cy) * 0.26;
+            const tx = cx + Math.max(-50, Math.min(50, dx));
+            const ty = cy + Math.max(-46, Math.min(46, dy));
+            const glint = ctx.createRadialGradient(tx, ty, 1, tx, ty, 20);
+            glint.addColorStop(0, `rgba(255, 252, 235, ${0.95 * eye.torchIntensity})`);
+            glint.addColorStop(0.35, `rgba(255, 240, 195, ${0.55 * eye.torchIntensity})`);
+            glint.addColorStop(1, "rgba(255, 235, 180, 0)");
+            ctx.fillStyle = glint;
+            ctx.beginPath();
+            ctx.arc(tx, ty, 20, 0, Math.PI * 2);
+            ctx.fill();
+          }
+
+          // Fluid drop / wisp contact ripples on cornea
+          eye.cornealRipples.forEach((rip) => {
+            ctx.strokeStyle = rip.color.replace("ALPHA", rip.alpha.toFixed(2));
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(cx, cy, rip.r, 0, Math.PI * 2);
+            ctx.stroke();
+          });
+
+          // Wet glistening tear meniscus along lower lid
+          const tearAlpha = 0.34 + eye.wetnessBoost * 0.38;
+          ctx.strokeStyle = `rgba(235, 248, 255, ${tearAlpha})`;
+          ctx.lineWidth = 2.4 + eye.wetnessBoost * 1.8;
+          ctx.beginPath();
+          ctx.moveTo(cx - 72, cy + lowerDrop * 0.72);
+          ctx.quadraticCurveTo(cx, cy + lowerDrop * 0.96, cx + 72, cy + lowerDrop * 0.72);
+          ctx.stroke();
+
+          // Soft upper eyelid ambient shadow cast onto eyeball (crucial 3D realism!)
+          const lidShadow = ctx.createLinearGradient(cx, cy - upperLift - 8, cx, cy - upperLift + 42);
+          lidShadow.addColorStop(0, "rgba(38, 12, 18, 0.52)");
+          lidShadow.addColorStop(0.45, "rgba(38, 12, 18, 0.16)");
+          lidShadow.addColorStop(1, "rgba(38, 12, 18, 0)");
+          ctx.fillStyle = lidShadow;
+          ctx.fillRect(cx - halfW, cy - upperLift - 15, halfW * 2, 65);
+
+          ctx.restore(); // end eyeball aperture clip
+
+          // --- B. EYELID MARGINS, PINK RIM & FINE WHITE LASHES ---
+          ctx.save();
+          // Outer soft skin crease around lids
+          ctx.strokeStyle = "rgba(155, 118, 116, 0.45)";
+          ctx.lineWidth = 4.5;
+          makeAperturePath();
+          ctx.stroke();
+
+          // Moist pinkish lid margin
+          ctx.strokeStyle = "#d89aa0";
+          ctx.lineWidth = 2.6;
+          makeAperturePath();
+          ctx.stroke();
+
+          // Subtle upper eyelid skin fold line
+          ctx.strokeStyle = "rgba(135, 108, 102, 0.38)";
+          ctx.lineWidth = 1.6;
+          ctx.beginPath();
+          ctx.moveTo(cx - halfW + 10, cy - 8);
+          ctx.bezierCurveTo(
+            cx - halfW * 0.48, cy - upperLift * 1.28 - 18,
+            cx + halfW * 0.48, cy - upperLift * 1.28 - 18,
+            cx + halfW - 10, cy - 8
+          );
+          ctx.stroke();
+
+          // Delicate white rabbit upper eyelashes along upper margin
+          ctx.strokeStyle = "rgba(255, 252, 248, 0.72)";
+          ctx.lineWidth = 1;
+          for (let i = 0; i <= 22; i++) {
+            const t = i / 22;
+            const mt = 1 - t;
+            // Cubic Bezier point along upper lid
+            const p0x = cx - halfW, p0y = cy + 4;
+            const p1x = cx - halfW * 0.55, p1y = cy - upperLift * 1.15 - (1 - openAmt) * (-8);
+            const p2x = cx + halfW * 0.55, p2y = p1y;
+            const p3x = cx + halfW, p3y = cy + 4;
+            const lx = mt*mt*mt*p0x + 3*mt*mt*t*p1x + 3*mt*t*t*p2x + t*t*t*p3x;
+            const ly = mt*mt*mt*p0y + 3*mt*mt*t*p1y + 3*mt*t*t*p2y + t*t*t*p3y;
+            const lashAng = -Math.PI / 2 + (t - 0.5) * 1.25;
+            const lashLen = (7 + Math.sin(t * Math.PI) * 9) * (0.4 + 0.6 * openAmt);
+            ctx.beginPath();
+            ctx.moveTo(lx, ly);
+            ctx.lineTo(lx + Math.cos(lashAng) * lashLen, ly + Math.sin(lashAng) * lashLen);
+            ctx.stroke();
+          }
+
+          // When fully closed (blink near 1), draw closed palpebral seam softly
+          if (openAmt < 0.12) {
+            ctx.strokeStyle = "rgba(165, 112, 118, 0.6)";
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(cx - halfW + 4, cy + 4);
+            ctx.quadraticCurveTo(cx, cy + 12, cx + halfW - 4, cy + 4);
+            ctx.stroke();
+          }
+          ctx.restore();
+
+          // --- C. FALLING DRUG DROPLETS ---
+          eye.fallingDrops.forEach((d) => {
+            ctx.save();
+            ctx.fillStyle = d.color;
+            ctx.beginPath();
+            ctx.moveTo(d.x, d.y - 9);
+            ctx.bezierCurveTo(d.x + 6, d.y + 1, d.x + 5, d.y + 7, d.x, d.y + 7);
+            ctx.bezierCurveTo(d.x - 5, d.y + 7, d.x - 6, d.y + 1, d.x, d.y - 9);
+            ctx.fill();
+            // Specular highlight on droplet
+            ctx.fillStyle = "rgba(255, 255, 255, 0.85)";
+            ctx.beginPath();
+            ctx.arc(d.x - 1.6, d.y + 1.5, 1.5, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.restore();
+          });
+
+          // --- D. SUBTLE ONSET INDICATOR RING IF ABSORBING ---
+          if (eye.drugId && eye.elapsedSimSec > 0 && eye.elapsedSimSec < ABSORPTION_DURATION) {
+            const pct = eye.elapsedSimSec / ABSORPTION_DURATION;
+            ctx.save();
+            ctx.strokeStyle = DRUGS[eye.drugId].color;
+            ctx.lineWidth = 3;
+            ctx.globalAlpha = 0.72;
+            ctx.beginPath();
+            ctx.arc(cx, cy, 198, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * pct);
+            ctx.stroke();
+            ctx.restore();
+          }
+        }
+
+        drawTorchBeam(ctx, x, y) {
+          ctx.save();
+          const grad = ctx.createRadialGradient(x, y, 4, x, y, 92);
+          grad.addColorStop(0, "rgba(255, 250, 224, 0.42)");
+          grad.addColorStop(0.35, "rgba(255, 240, 185, 0.16)");
+          grad.addColorStop(1, "rgba(255, 240, 185, 0)");
+          ctx.fillStyle = grad;
+          ctx.beginPath();
+          ctx.arc(x, y, 92, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.restore();
+        }
+
+        drawActiveTool(ctx, tool, x, y, now) {
+          ctx.save();
+
+          if (tool === "dropper") {
+            const drug = DRUGS[state.selectedDrugId];
+            ctx.translate(x, y);
+            ctx.rotate(0.45);
+            // Glass pipette tip at (0,0)
+            ctx.strokeStyle = "rgba(226, 240, 255, 0.88)";
+            ctx.lineWidth = 1.6;
+            ctx.fillStyle = "rgba(226, 242, 255, 0.16)";
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            ctx.lineTo(-4, -18);
+            ctx.lineTo(-6.5, -72);
+            ctx.lineTo(6.5, -72);
+            ctx.lineTo(4, -18);
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+
+            // Colored meniscus fluid inside glass barrel
+            ctx.fillStyle = drug.fluidRgba;
+            ctx.beginPath();
+            ctx.moveTo(-2.2, -10);
+            ctx.lineTo(-5.2, -50);
+            ctx.quadraticCurveTo(0, -47, 5.2, -50);
+            ctx.lineTo(2.2, -10);
+            ctx.closePath();
+            ctx.fill();
+
+            // Glass specular streak
+            ctx.strokeStyle = "rgba(255, 255, 255, 0.55)";
+            ctx.lineWidth = 1.2;
+            ctx.beginPath();
+            ctx.moveTo(-3.2, -20);
+            ctx.lineTo(-4.4, -66);
+            ctx.stroke();
+
+            // Squeeze rubber bulb
+            const squeeze = state.pointer.down ? 0.85 : 1;
+            ctx.fillStyle = "#1e293b";
+            ctx.strokeStyle = "#64748b";
+            ctx.lineWidth = 1.2;
+            ctx.beginPath();
+            ctx.ellipse(0, -88, 9.5 * squeeze, 19, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+
+            // Collar
+            ctx.fillStyle = "#cbd5e1";
+            ctx.fillRect(-7.5, -75, 15, 5);
+          } else if (tool === "torch") {
+            ctx.translate(x, y);
+            ctx.rotate(0.58);
+            // Glowing LED lens at tip
+            const glow = ctx.createRadialGradient(0, -2, 1, 0, -2, 12);
+            glow.addColorStop(0, "#ffffff");
+            glow.addColorStop(0.5, "rgba(254, 240, 138, 0.8)");
+            glow.addColorStop(1, "rgba(254, 240, 138, 0)");
+            ctx.fillStyle = glow;
+            ctx.beginPath();
+            ctx.arc(0, -2, 12, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Brushed aluminum medical penlight body
+            const bodyGrad = ctx.createLinearGradient(-8, 0, 8, 0);
+            bodyGrad.addColorStop(0, "#475569");
+            bodyGrad.addColorStop(0.35, "#e2e8f0");
+            bodyGrad.addColorStop(0.65, "#94a3b8");
+            bodyGrad.addColorStop(1, "#334155");
+            ctx.fillStyle = bodyGrad;
+            ctx.beginPath();
+            ctx.roundRect(-7, 2, 14, 96, 4);
+            ctx.fill();
+            ctx.strokeStyle = "rgba(15, 23, 42, 0.5)";
+            ctx.stroke();
+
+            // Pocket clip & pupil gauge print
+            ctx.fillStyle = "#f59e0b";
+            ctx.fillRect(-7, 16, 14, 4);
+            ctx.fillStyle = "#1e293b";
+            ctx.fillRect(6, 26, 3, 42);
+          } else if (tool === "wisp") {
+            ctx.translate(x, y);
+            ctx.rotate(0.62);
+            // Fine twisted sterile cotton fibers at tip (0, 0)
+            ctx.fillStyle = "rgba(255, 255, 255, 0.92)";
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            ctx.bezierCurveTo(-5, 6, -7, 18, -3, 25);
+            ctx.bezierCurveTo(1, 28, 6, 22, 6, 14);
+            ctx.bezierCurveTo(6, 7, 2, 2, 0, 0);
+            ctx.fill();
+            ctx.strokeStyle = "rgba(203, 213, 225, 0.8)";
+            ctx.lineWidth = 0.8;
+            ctx.stroke();
+
+            // Wispy micro-strands at apex
+            ctx.strokeStyle = "rgba(255, 255, 255, 0.85)";
+            ctx.lineWidth = 0.9;
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            ctx.quadraticCurveTo(-2, -5, 1, -8);
+            ctx.moveTo(0, 1);
+            ctx.quadraticCurveTo(3, -3, 4, -6);
+            ctx.stroke();
+
+            // Wooden sterile applicator stick
+            ctx.fillStyle = "#d6b084";
+            ctx.strokeStyle = "#8c6742";
+            ctx.lineWidth = 0.8;
+            ctx.fillRect(-1.8, 22, 3.6, 86);
+            ctx.strokeRect(-1.8, 22, 3.6, 86);
+          } else if (tool === "ruler") {
+            // Semi-transparent 14 mm clinical ophthalmic pupillometer ruler
+            // Calibrated 1:1 with PX_PER_MM!
+            const totalMm = 14;
+            const rulerW = totalMm * PX_PER_MM + 24;
+            const rulerH = 44;
+            const leftX = x - rulerW / 2;
+            const topY = y - 10;
+
+            // Frosted acrylic body
+            ctx.fillStyle = "rgba(15, 23, 42, 0.56)";
+            ctx.strokeStyle = "rgba(56, 189, 248, 0.72)";
+            ctx.lineWidth = 1.3;
+            ctx.beginPath();
+            ctx.roundRect(leftX, topY, rulerW, rulerH, 6);
+            ctx.fill();
+            ctx.stroke();
+
+            // Laser-etched 0.5 mm and 1.0 mm graduations starting at leftX + 12
+            const originX = leftX + 12;
+            for (let half = 0; half <= totalMm * 2; half++) {
+              const tx = originX + half * (PX_PER_MM / 2);
+              const isWhole = half % 2 === 0;
+              const isFive = half % 10 === 0;
+              const tickLen = isFive ? 15 : isWhole ? 11 : 6;
+              ctx.strokeStyle = isWhole ? "rgba(224, 242, 254, 0.92)" : "rgba(148, 163, 184, 0.65)";
+              ctx.lineWidth = isFive ? 1.4 : 1;
+              ctx.beginPath();
+              ctx.moveTo(tx, topY);
+              ctx.lineTo(tx, topY + tickLen);
+              ctx.stroke();
+
+              if (isWhole && half % 4 === 0) {
+                ctx.fillStyle = "#e0f2fe";
+                ctx.font = "600 9px 'JetBrains Mono', monospace";
+                ctx.textAlign = "center";
+                ctx.fillText(String(half / 2), tx, topY + 25);
+              }
+            }
+
+            // Highlight live caliper bracket when aligned over an eye's pupil
+            const eye = getHoveredEye(x, y, 75);
+            if (eye && Math.abs(y - eye.cy) < 42) {
+              const pR = (eye.pupilMm / 2) * PX_PER_MM;
+              ctx.strokeStyle = "#2dd4bf";
+              ctx.lineWidth = 1.8;
+              ctx.setLineDash([3, 3]);
+              ctx.beginPath();
+              ctx.moveTo(eye.cx - pR, eye.cy - pR - 14);
+              ctx.lineTo(eye.cx - pR, topY + 2);
+              ctx.moveTo(eye.cx + pR, eye.cy - pR - 14);
+              ctx.lineTo(eye.cx + pR, topY + 2);
+              ctx.stroke();
+              ctx.setLineDash([]);
+
+              // Live digital vernier badge
+              const label = `Ø ${eye.pupilMm.toFixed(1)} mm`;
+              ctx.fillStyle = "rgba(13, 148, 136, 0.94)";
+              ctx.beginPath();
+              ctx.roundRect(x - 38, topY + rulerH + 5, 76, 20, 999);
+              ctx.fill();
+              ctx.fillStyle = "#ffffff";
+              ctx.font = "700 11px 'JetBrains Mono', monospace";
+              ctx.textAlign = "center";
+              ctx.fillText(label, x, topY + rulerH + 19);
+            } else {
+              ctx.fillStyle = "rgba(148, 163, 184, 0.85)";
+              ctx.font = "600 9.5px 'Inter', sans-serif";
+              ctx.textAlign = "center";
+              ctx.fillText("Align horizontally across pupil (mm)", x, topY + 37);
+            }
+          }
+
+          ctx.restore();
+        }
+      }
+
+      /* =========================================================================
+       * 5. PHYSIOLOGY & CLINICAL INTERACTION ENGINE
+       * ========================================================================= */
+      function getHoveredEye(x, y, radius = 92) {
+        for (const side of ["left", "right"]) {
+          const eye = state.eyes[side];
+          const d = Math.hypot(x - eye.cx, y - eye.cy);
+          if (d <= radius) return eye;
+        }
+        return null;
+      }
+
+      function triggerBlink(eye, reflexive = false) {
+        eye.isBlinking = true;
+        eye.blinkPhaseTime = 0;
+        eye.blinkDuration = reflexive ? 0.19 : 0.24;
+        if (reflexive) {
+          eye.nictitating = 0.95;
+        }
+      }
+
+      function spawnCornealRipple(eye, color = "rgba(255, 255, 255, ALPHA)") {
+        eye.cornealRipples.push({ r: 8, maxR: 72, alpha: 0.75, color });
+      }
+
+      function instilDropsIntoEye(eye) {
+        // Control eye receives Normal Saline if user clicks Left Eye with Saline, OR allow any drug on either eye
+        // For authentic Exp 8 protocol: Left eye defaults to Saline if Saline selected, or warns gently if test drug instilled on Control eye
+        const chosenId = state.selectedDrugId;
+        const drug = DRUGS[chosenId];
+
+        eye.drugId = chosenId;
+        eye.dropsInstilled += 2;
+        if (eye.elapsedSimSec >= ABSORPTION_DURATION) {
+          // Re-instilling a fresh drug restarts absorption smoothly
+          eye.elapsedSimSec = 0;
+          eye.onset = 0;
+        }
+        eye.post = { pupil: null, light: null, corneal: null };
+
+        // Spawn 2 realistic falling droplets
+        eye.fallingDrops.push(
+          { x: eye.cx - 5, y: eye.cy - 68, vy: 120, targetY: eye.cy + 6, color: drug.fluidRgba },
+          { x: eye.cx + 6, y: eye.cy - 92, vy: 110, targetY: eye.cy + 14, color: drug.fluidRgba }
+        );
+
+        sfx.playDrop();
+        setTimeout(() => sfx.playDrop(), 130);
+
+        const eyeLabel = eye.side === "left" ? "Left Eye (OS)" : "Right Eye (OD)";
+        showToast(`Instilled 2 drops of ${drug.name} (${drug.conc}) into ${eyeLabel}. Absorption timer started.`);
+        updateHUDAndStepper();
+      }
+
+      function handleCornealTouch(eye) {
+        if (eye.wispCooldown > 0) return;
+        eye.wispCooldown = 0.85;
+
+        const effectiveDrug = eye.drugId && eye.onset >= 0.65 ? DRUGS[eye.drugId] : null;
+        const reflexIntact = effectiveDrug ? effectiveDrug.cornealReflex : true;
+
+        spawnCornealRipple(eye, reflexIntact ? "rgba(56, 189, 248, ALPHA)" : "rgba(167, 139, 250, ALPHA)");
+        sfx.playClick(reflexIntact ? 760 : 340);
+
+        if (reflexIntact) {
+          triggerBlink(eye, true);
+        }
+
+        // Record measurement
+        const phase = eye.drugId && eye.onset >= 0.65 ? "post" : "baseline";
+        eye[phase].corneal = reflexIntact;
+
+        if (phase === "post" && eye.drugId) {
+          state.obsRecords[eye.drugId].corneal = reflexIntact;
+          renderObsTable(eye.drugId, "corneal");
+        }
+
+        const sideTxt = eye.side === "left" ? "OS" : "OD";
+        if (reflexIntact) {
+          showToast(`${sideTxt} Corneal Reflex: PRESENT (+) — Immediate protective blink via CN V₁ → VII.`);
+        } else {
+          showToast(`${sideTxt} Corneal Reflex: ABOLISHED (−) — Lignocaine blocked corneal Na⁺ channels; no blink!`);
+        }
+        updateTelemetryUI();
+        updateHUDAndStepper();
+      }
+
+      function logPupilMeasurement(eye) {
+        const val = Number(eye.pupilMm.toFixed(1));
+        const phase = eye.drugId && eye.onset >= 0.65 ? "post" : "baseline";
+        eye[phase].pupil = val;
+
+        if (phase === "baseline") {
+          // Store baseline on selected drug row (and saline if left eye)
+          const targetId = eye.side === "left" ? "saline" : state.selectedDrugId;
+          state.obsRecords[targetId].basePupil = val;
+          renderObsTable(targetId, "basePupil");
+        } else if (eye.drugId) {
+          if (state.obsRecords[eye.drugId].basePupil == null) {
+            state.obsRecords[eye.drugId].basePupil = BASELINE_PUPIL_MM;
+          }
+          state.obsRecords[eye.drugId].postPupil = val;
+          renderObsTable(eye.drugId, "postPupil");
+        }
+
+        sfx.playCapture();
+        const sideTxt = eye.side === "left" ? "OS (Left)" : "OD (Right)";
+        showToast(`Measured ${sideTxt} ${phase === "post" ? "Post-Drug" : "Baseline"} Pupil: ${val.toFixed(1)} mm`);
+        updateTelemetryUI();
+        updateHUDAndStepper();
+      }
+
+      function logLightReflex(eye) {
+        const effectiveDrug = eye.drugId && eye.onset >= 0.65 ? DRUGS[eye.drugId] : null;
+        const intact = effectiveDrug ? effectiveDrug.lightReflex : true;
+        const phase = eye.drugId && eye.onset >= 0.65 ? "post" : "baseline";
+        if (eye[phase].light === intact) return; // already logged this state
+
+        eye[phase].light = intact;
+        if (phase === "post" && eye.drugId) {
+          state.obsRecords[eye.drugId].light = intact;
+          renderObsTable(eye.drugId, "light");
+        }
+
+        sfx.playCapture();
+        const sideTxt = eye.side === "left" ? "OS" : "OD";
+        if (intact) {
+          showToast(`${sideTxt} Light Reflex: PRESENT (+) — Brisk pupillary constriction observed.`);
+        } else {
+          showToast(`${sideTxt} Light Reflex: ABOLISHED (−) — Fixed mydriasis (M₃ blockade by Atropine).`);
+        }
+        updateTelemetryUI();
+        updateHUDAndStepper();
+      }
+
+      /* Simulation tick (60 FPS physics & pharmacokinetics) */
+      function updateSimulation(dt) {
+        // Real-time accelerated clock: 1 real second = 8 simulated seconds (so 8 min = 60s real time, or instant via 8m Skip)
+        const SIM_SPEED = 8.0;
+
+        ["left", "right"].forEach((side) => {
+          const eye = state.eyes[side];
+
+          // 1. Pharmacokinetic onset progression
+          if (eye.drugId && eye.elapsedSimSec < ABSORPTION_DURATION) {
+            eye.elapsedSimSec = Math.min(ABSORPTION_DURATION, eye.elapsedSimSec + dt * SIM_SPEED);
+            const norm = eye.elapsedSimSec / ABSORPTION_DURATION;
+            // Smooth Hill-like sigmoidal onset curve
+            eye.onset = 1 / (1 + Math.exp(-10 * (norm - 0.42)));
+            if (norm >= 0.995) eye.onset = 1;
+          }
+
+          // 2. Falling droplets physics
+          for (let i = eye.fallingDrops.length - 1; i >= 0; i--) {
+            const d = eye.fallingDrops[i];
+            d.vy += 420 * dt;
+            d.y += d.vy * dt;
+            if (d.y >= d.targetY) {
+              eye.fallingDrops.splice(i, 1);
+              eye.wetnessBoost = 1.0;
+              spawnCornealRipple(eye, "rgba(186, 230, 253, ALPHA)");
+              // Mechanical drop impact causes gentle reflex blink unless anaesthetized
+              const blocked = eye.drugId === "lignocaine" && eye.onset > 0.65;
+              if (!blocked) triggerBlink(eye, false);
+            }
+          }
+          eye.wetnessBoost = Math.max(0, eye.wetnessBoost - dt * 0.28);
+
+          // 3. Corneal ripples update
+          for (let i = eye.cornealRipples.length - 1; i >= 0; i--) {
+            const r = eye.cornealRipples[i];
+            r.r += 115 * dt;
+            r.alpha -= 1.35 * dt;
+            if (r.alpha <= 0 || r.r >= r.maxR) eye.cornealRipples.splice(i, 1);
+          }
+
+          // 4. Eyelid retraction when hovering with precision dropper
+          const distToPtr = Math.hypot(state.pointer.x - eye.cx, state.pointer.y - eye.cy);
+          const retractGoal = state.activeTool === "dropper" && state.pointer.inside && distToPtr < 110 ? 1 : 0;
+          eye.lidRetract += (retractGoal - eye.lidRetract) * Math.min(1, dt * 8);
+
+          // 5. Pen-Torch optical exposure & Light Reflex
+          let torchGoal = 0;
+          if (state.activeTool === "torch" && state.pointer.inside && distToPtr < 96) {
+            torchGoal = Math.max(0, 1 - distToPtr / 96);
+          }
+          eye.torchIntensity += (torchGoal - eye.torchIntensity) * Math.min(1, dt * 10);
+
+          if (eye.torchIntensity > 0.45) {
+            eye.torchHoldTime += dt;
+            if (eye.torchHoldTime > 0.65) {
+              logLightReflex(eye);
+            }
+          } else {
+            eye.torchHoldTime = 0;
+          }
+
+          // 6. Cotton Wisp corneal contact detection
+          if (eye.wispCooldown > 0) eye.wispCooldown = Math.max(0, eye.wispCooldown - dt);
+          if (state.activeTool === "wisp" && state.pointer.inside && distToPtr < 56) {
+            handleCornealTouch(eye);
+          }
+
+          // 7. Ruler hover auto-capture after steady alignment
+          if (
+            state.activeTool === "ruler" &&
+            state.pointer.inside &&
+            distToPtr < 62 &&
+            Math.abs(state.pointer.y - eye.cy) < 34
+          ) {
+            eye.rulerHoldTime += dt;
+            if (eye.rulerHoldTime > 0.75) {
+              eye.rulerHoldTime = -1.8; // debounce so it doesn't spam
+              logPupilMeasurement(eye);
+            }
+          } else {
+            eye.rulerHoldTime = 0;
+          }
+
+          // 8. Target Pupil Diameter (mm) with smooth physiological spring physics
+          const drug = eye.drugId ? DRUGS[eye.drugId] : null;
+          const restingPupil = drug
+            ? BASELINE_PUPIL_MM + (drug.targetPupilMm - BASELINE_PUPIL_MM) * eye.onset
+            : BASELINE_PUPIL_MM;
+
+          // Light-reflex constriction target
+          let torchTarget = 3.1; // normal eye constricts to ~3.1 mm
+          if (drug) {
+            torchTarget = 3.1 + (drug.torchConstrictMm - 3.1) * eye.onset;
+          }
+
+          const illuminatedPupil = restingPupil + (torchTarget - restingPupil) * Math.min(1, eye.torchIntensity * 1.35);
+          // Subtle physiological hippus (tiny natural autonomic oscillation ~0.06 mm)
+          const hippus = Math.sin(performance.now() * 0.0023 + (side === "left" ? 0 : 1.7)) * 0.05;
+          const targetPupil = illuminatedPupil + hippus;
+
+          const stiffness = 14;
+          const damping = 6.2;
+          const accel = (targetPupil - eye.pupilMm) * stiffness - eye.pupilVel * damping;
+          eye.pupilVel += accel * dt;
+          eye.pupilMm += eye.pupilVel * dt;
+
+          // 9. Spontaneous & Reflexive Blinking + Nictitating Membrane
+          if (eye.isBlinking) {
+            eye.blinkPhaseTime += dt;
+            const p = eye.blinkPhaseTime / eye.blinkDuration;
+            if (p >= 1) {
+              eye.isBlinking = false;
+              eye.blink = 0;
+            } else {
+              // Fast snap shut, slightly slower natural reopen
+              eye.blink = p < 0.42 ? Math.sin((p / 0.42) * (Math.PI / 2)) : Math.cos(((p - 0.42) / 0.58) * (Math.PI / 2));
+            }
+          } else {
+            eye.blinkTimer -= dt;
+            if (eye.blinkTimer <= 0) {
+              eye.blinkTimer = 3.5 + Math.random() * 4.5;
+              triggerBlink(eye, false);
+            }
+          }
+          eye.nictitating = Math.max(0, eye.nictitating - dt * 2.8);
+        });
+
+        updateTimerUI();
+      }
+
+      /* =========================================================================
+       * 6. UI BINDINGS, OBSERVATION TABLE, PHARMACOLOGY & VIVA VOCE
+       * ========================================================================= */
+      const canvas = document.getElementById("eyeCanvas");
+      const renderer = new RabbitEyeRenderer(canvas);
+
+      function showToast(msg) {
+        const el = document.getElementById("hudToast");
+        document.getElementById("hudToastText").textContent = msg;
+        el.classList.remove("hidden");
+        state.lastToastTime = performance.now();
+      }
+
+      function renderVialRack() {
+        const rack = document.getElementById("vialRack");
+        rack.innerHTML = `<span class="vial-label">Drug Vials</span>`;
+        DRUG_ORDER.forEach((id) => {
+          const d = DRUGS[id];
+          const btn = document.createElement("button");
+          btn.className = "vial-btn" + (state.selectedDrugId === id ? " selected" : "");
+          btn.innerHTML = `
+            <span class="vial-dot" style="background:${d.color};color:${d.color}"></span>
+            <span class="vial-info">
+              <span class="vial-name">${d.name}</span>
+              <span class="vial-conc">${d.conc}</span>
+            </span>
+          `;
+          btn.addEventListener("click", () => {
+            state.selectedDrugId = id;
+            sfx.playClick(580);
+            renderVialRack();
+            renderMechCard();
+            renderObsTable();
+            showToast(`Loaded ${d.name} (${d.conc}) into Dropper. Equip Dropper (1) and click an eye to instil.`);
+          });
+          rack.appendChild(btn);
+        });
+      }
+
+      function renderMechCard() {
+        const d = DRUGS[state.selectedDrugId];
+        document.getElementById("mechCard").innerHTML = `
+          <div class="mech-header">
+            <span class="mech-title" style="color:${d.color}">${d.name} (${d.conc})</span>
+            <span class="mech-class">${d.className}</span>
+          </div>
+          <p style="font-size:12px;color:#cbd5e1">${d.summary}</p>
+          <ul class="mech-list">
+            ${d.mechanism.map((m) => `<li>• ${m}</li>`).join("")}
+          </ul>
+        `;
+        document.getElementById("clinicalPearl").innerHTML = `<strong>Clinical Pearl:</strong> ${d.pearl}`;
+
+        // Highlight active pathway in SVG schematic
+        const nodes = {
+          para: ["nodePara", "effSphincter"],
+          symp: ["nodeSymp", "effDilator"],
+          sensory: ["nodeSensory", "effOrbicularis"]
+        };
+        Object.entries(nodes).forEach(([key, ids]) => {
+          const active = d.pathway === key || d.pathway === "none";
+          ids.forEach((elId) => {
+            const el = document.getElementById(elId);
+            if (el) el.style.opacity = active ? "1" : "0.32";
+          });
+        });
+      }
+
+      function formatReflexPill(val) {
+        if (val === true) return `<span class="pill-pos">Present (+)</span>`;
+        if (val === false) return `<span class="pill-neg">Absent (−)</span>`;
+        return `<span class="pill-pending">—</span>`;
+      }
+
+      function formatReflexShort(val) {
+        if (val === true) return `<span class="pill-pos">+</span>`;
+        if (val === false) return `<span class="pill-neg">−</span>`;
+        return `<span class="pill-pending">—</span>`;
+      }
+
+      function renderObsTable(flashDrugId = null, flashField = null) {
+        const tbody = document.getElementById("obsTableBody");
+        tbody.innerHTML = "";
+        DRUG_ORDER.forEach((id) => {
+          const d = DRUGS[id];
+          const rec = state.obsRecords[id];
+          const tr = document.createElement("tr");
+          if (id === state.selectedDrugId) tr.classList.add("row-active");
+
+          const f = (field) => (flashDrugId === id && flashField === field ? "cell-flash" : "");
+
+          tr.innerHTML = `
+            <td>
+              <span class="obs-drug-name" style="color:${d.color}">${d.shortName}</span>
+              <span class="obs-drug-sub">${d.id === "saline" ? "Control" : d.className.split(" ")[0]}</span>
+            </td>
+            <td class="${f("basePupil")}" style="font-family:var(--font-mono)">${rec.basePupil != null ? rec.basePupil.toFixed(1) + " mm" : "—"}</td>
+            <td class="${f("postPupil")}" style="font-family:var(--font-mono);font-weight:600">${rec.postPupil != null ? rec.postPupil.toFixed(1) + " mm" : "—"}</td>
+            <td class="${f("light")}">${formatReflexShort(rec.light)}</td>
+            <td class="${f("corneal")}">${formatReflexShort(rec.corneal)}</td>
+          `;
+          tbody.appendChild(tr);
+        });
+      }
+
+      function updateTelemetryUI() {
+        const mapEye = (eye, prefix) => {
+          const isPost = eye.drugId && eye.onset >= 0.65;
+          const bag = isPost ? eye.post : eye.baseline;
+          document.getElementById(`tel${prefix}Phase`).textContent = isPost
+            ? DRUGS[eye.drugId].shortName
+            : eye.drugId
+            ? "Absorbing..."
+            : "Baseline";
+          document.getElementById(`tel${prefix}Pupil`).textContent =
+            bag.pupil != null ? `${bag.pupil.toFixed(1)} mm` : "— mm";
+          document.getElementById(`tel${prefix}Light`).innerHTML = formatReflexPill(bag.light);
+          document.getElementById(`tel${prefix}Corneal`).innerHTML = formatReflexPill(bag.corneal);
+        };
+        mapEye(state.eyes.left, "Left");
+        mapEye(state.eyes.right, "Right");
+      }
+
+      function updateTimerUI() {
+        // Show max active absorption timer across either eye
+        const activeSec = Math.max(state.eyes.left.elapsedSimSec, state.eyes.right.elapsedSimSec);
+        const mins = Math.floor(activeSec / 60);
+        const secs = Math.floor(activeSec % 60);
+        document.getElementById("timerDisplay").textContent =
+          `${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
+        document.getElementById("absorptionBar").style.width =
+          `${Math.min(100, (activeSec / ABSORPTION_DURATION) * 100)}%`;
+
+        // Update eye overlay badges
+        const fmtStatus = (eye, fallback) => {
+          if (!eye.drugId) return fallback;
+          const d = DRUGS[eye.drugId];
+          const pct = Math.round(eye.onset * 100);
+          return pct >= 99
+            ? `${d.shortName} · Peak Effect (${eye.pupilMm.toFixed(1)} mm)`
+            : `${d.shortName} · Absorbing ${pct}%`;
+        };
+        document.getElementById("leftStatusText").textContent = fmtStatus(
+          state.eyes.left,
+          "Baseline · Unmedicated"
+        );
+        document.getElementById("rightStatusText").textContent = fmtStatus(
+          state.eyes.right,
+          "Baseline · Select & instil drug"
+        );
+      }
+
+      function updateHUDAndStepper() {
+        const L = state.eyes.left;
+        const R = state.eyes.right;
+        const hasBaseline = L.baseline.pupil != null || R.baseline.pupil != null || R.baseline.light != null;
+        const hasInstilled = L.drugId != null || R.drugId != null;
+        const hasAbsorbed = L.onset >= 0.9 || R.onset >= 0.9;
+        const hasPost = R.post.pupil != null || R.post.light != null || R.post.corneal != null;
+
+        const steps = [
+          { el: document.getElementById("step-1"), done: hasBaseline || hasInstilled, active: !hasInstilled },
+          { el: document.getElementById("step-2"), done: hasInstilled, active: hasBaseline && !hasInstilled },
+          { el: document.getElementById("step-3"), done: hasAbsorbed, active: hasInstilled && !hasAbsorbed },
+          { el: document.getElementById("step-4"), done: hasPost, active: hasAbsorbed }
+        ];
+        steps.forEach((s) => {
+          s.el.classList.remove("active", "done");
+          if (s.done) s.el.classList.add("done");
+          if (s.active) s.el.classList.add("active");
+        });
+      }
+
+      function setActiveTool(tool) {
+        state.activeTool = state.activeTool === tool ? null : tool;
+        document.querySelectorAll(".tool-card").forEach((btn) => {
+          btn.classList.toggle("active", btn.dataset.tool === state.activeTool);
+        });
+        canvas.classList.toggle("tool-active", Boolean(state.activeTool));
+        sfx.playClick(640);
+
+        const hints = {
+          dropper: `Dropper armed with ${DRUGS[state.selectedDrugId].name}. Click an eye to instil 2 drops.`,
+          torch: "Pen-Torch active. Hover beam over Left or Right pupil to test direct Pupillary Light Reflex.",
+          wisp: "Cotton Wisp active. Gently touch the central cornea to test the protective Corneal Blink Reflex.",
+          ruler: "Calibrated Millimeter Ruler active. Align horizontally across the pupil and click (or hold) to record mm."
+        };
+        if (state.activeTool) showToast(hints[state.activeTool]);
+      }
+
+      /* Viva Voce Renderer */
+      function renderViva() {
+        const idx = state.vivaIndex;
+        const q = VIVA_QUESTIONS[idx];
+        const chosen = state.vivaAnswers[idx];
+        const score = state.vivaAnswers.reduce(
+          (acc, ans, i) => acc + (ans === VIVA_QUESTIONS[i].correct ? 1 : 0),
+          0
+        );
+
+        document.getElementById("vivaCounter").textContent = `Question ${idx + 1} of ${VIVA_QUESTIONS.length}`;
+        document.getElementById("vivaScore").textContent = `Score: ${score} / ${VIVA_QUESTIONS.length}`;
+
+        const card = document.getElementById("vivaCard");
+        card.innerHTML = `
+          <div class="viva-q">${idx + 1}. ${q.q}</div>
+          <div class="viva-options">
+            ${q.options
+              .map((opt, oi) => {
+                let cls = "viva-opt";
+                if (chosen !== null) {
+                  if (oi === q.correct) cls += " correct";
+                  else if (oi === chosen) cls += " wrong";
+                }
+                return `<button class="${cls}" data-opt="${oi}" ${chosen !== null ? "disabled" : ""}>${String.fromCharCode(65 + oi)}. ${opt}</button>`;
+              })
+              .join("")}
+          </div>
+          ${chosen !== null ? `<div class="viva-explain"><strong>Explanation:</strong> ${q.explain}</div>` : ""}
+        `;
+
+        card.querySelectorAll(".viva-opt").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            state.vivaAnswers[idx] = Number(btn.dataset.opt);
+            sfx.playClick(state.vivaAnswers[idx] === q.correct ? 880 : 300);
+            renderViva();
+          });
+        });
+      }
+
+      /* =========================================================================
+       * 7. POINTER, DRAG-AND-DROP & KEYBOARD INTERACTION
+       * ========================================================================= */
+      function getCanvasLogicalPos(evt) {
+        const rect = canvas.getBoundingClientRect();
+        return {
+          x: ((evt.clientX - rect.left) / rect.width) * LOGICAL_W,
+          y: ((evt.clientY - rect.top) / rect.height) * LOGICAL_H
+        };
+      }
+
+      canvas.addEventListener("pointermove", (e) => {
+        const pt = getCanvasLogicalPos(e);
+        state.pointer.x = pt.x;
+        state.pointer.y = pt.y;
+        state.pointer.inside = true;
+      });
+
+      canvas.addEventListener("pointerleave", () => {
+        state.pointer.inside = false;
+        state.pointer.down = false;
+      });
+
+      canvas.addEventListener("pointerdown", (e) => {
+        const pt = getCanvasLogicalPos(e);
+        state.pointer.x = pt.x;
+        state.pointer.y = pt.y;
+        state.pointer.inside = true;
+        state.pointer.down = true;
+
+        const eye = getHoveredEye(pt.x, pt.y, 105);
+        if (!eye) return;
+
+        if (state.activeTool === "dropper") {
+          instilDropsIntoEye(eye);
+        } else if (state.activeTool === "wisp") {
+          handleCornealTouch(eye);
+        } else if (state.activeTool === "ruler") {
+          logPupilMeasurement(eye);
+        } else if (state.activeTool === "torch") {
+          logLightReflex(eye);
+        } else {
+          showToast("Select a clinical tool from the instrument tray below (keys 1–4).");
+        }
+      });
+
+      window.addEventListener("pointerup", () => {
+        state.pointer.down = false;
+      });
+
+      // Instrument Tray Click & Seamless Drag-to-Stage Support
+      document.querySelectorAll(".tool-card").forEach((card) => {
+        card.addEventListener("pointerdown", (e) => {
+          const tool = card.dataset.tool;
+          if (state.activeTool !== tool) {
+            setActiveTool(tool);
+          } else if (e.type === "pointerdown") {
+            // Clicking already active tool toggles off only on clean click without drag
+            card.dataset.wasActive = "1";
+          }
+        });
+        card.addEventListener("click", () => {
+          if (card.dataset.wasActive === "1") {
+            card.dataset.wasActive = "";
+            setActiveTool(card.dataset.tool);
+          }
+        });
+      });
+
+      // Keyboard Shortcuts (1-4 tools, Esc release, Space fast-forward)
+      window.addEventListener("keydown", (e) => {
+        if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") return;
+        if (e.key === "1") setActiveTool("dropper");
+        else if (e.key === "2") setActiveTool("torch");
+        else if (e.key === "3") setActiveTool("wisp");
+        else if (e.key === "4") setActiveTool("ruler");
+        else if (e.key === "Escape" && state.activeTool) setActiveTool(state.activeTool);
+      });
+
+      // Fast-Forward 8:00 Absorption
+      document.getElementById("btnFastForward").addEventListener("click", () => {
+        let skipped = false;
+        ["left", "right"].forEach((side) => {
+          const eye = state.eyes[side];
+          if (eye.drugId) {
+            eye.elapsedSimSec = ABSORPTION_DURATION;
+            eye.onset = 1;
+            skipped = true;
+          }
+        });
+        if (!skipped) {
+          // Convenience: automatically instil Saline in OS and selected drug in OD if nothing instilled yet
+          state.eyes.left.drugId = "saline";
+          state.eyes.left.elapsedSimSec = ABSORPTION_DURATION;
+          state.eyes.left.onset = 1;
+          state.eyes.right.drugId = state.selectedDrugId;
+          state.eyes.right.elapsedSimSec = ABSORPTION_DURATION;
+          state.eyes.right.onset = 1;
+          showToast(
+            `Time-lapsed 8:00 min: Normal Saline (OS) & ${DRUGS[state.selectedDrugId].name} (OD) at peak pharmacological effect.`
+          );
+        } else {
+          showToast("8:00 minute absorption complete! Re-examine with Ruler, Pen-Torch, and Cotton Wisp.");
+        }
+        sfx.playCapture();
+        updateTelemetryUI();
+        updateHUDAndStepper();
+      });
+
+      // Washout / Reset Eyes
+      document.getElementById("btnWashout").addEventListener("click", () => {
+        ["left", "right"].forEach((side) => {
+          const eye = state.eyes[side];
+          eye.drugId = null;
+          eye.dropsInstilled = 0;
+          eye.elapsedSimSec = 0;
+          eye.onset = 0;
+          eye.baseline = { pupil: null, light: null, corneal: null };
+          eye.post = { pupil: null, light: null, corneal: null };
+          spawnCornealRipple(eye, "rgba(186, 230, 253, ALPHA)");
+          triggerBlink(eye, false);
+        });
+        sfx.playDrop();
+        updateTelemetryUI();
+        updateHUDAndStepper();
+        showToast("Eyes flushed with isotonic saline. Ready for next drug trial.");
+      });
+
+      // Log Current Readings into Observation Table
+      document.getElementById("btnCaptureAll").addEventListener("click", () => {
+        ["left", "right"].forEach((side) => {
+          const eye = state.eyes[side];
+          if (eye.drugId && eye.onset >= 0.65) {
+            const d = DRUGS[eye.drugId];
+            const rec = state.obsRecords[eye.drugId];
+            if (rec.basePupil == null) rec.basePupil = BASELINE_PUPIL_MM;
+            rec.postPupil = Number(eye.pupilMm.toFixed(1));
+            rec.light = d.lightReflex;
+            rec.corneal = d.cornealReflex;
+            eye.post = { pupil: rec.postPupil, light: d.lightReflex, corneal: d.cornealReflex };
+          }
+        });
+        sfx.playCapture();
+        renderObsTable(state.eyes.right.drugId || state.selectedDrugId, "postPupil");
+        updateTelemetryUI();
+        updateHUDAndStepper();
+        showToast("Logged current clinical examination results into the Observation Table.");
+      });
+
+      // Export CSV
+      document.getElementById("btnExportCSV").addEventListener("click", () => {
+        const rows = [["Drug", "Concentration", "Baseline Pupil (mm)", "Post-Drug Pupil (mm)", "Light Reflex", "Corneal Reflex"]];
+        DRUG_ORDER.forEach((id) => {
+          const d = DRUGS[id];
+          const r = state.obsRecords[id];
+          rows.push([
+            d.name,
+            d.conc,
+            r.basePupil != null ? r.basePupil.toFixed(1) : "",
+            r.postPupil != null ? r.postPupil.toFixed(1) : "",
+            r.light === true ? "Present (+)" : r.light === false ? "Absent (-)" : "",
+            r.corneal === true ? "Present (+)" : r.corneal === false ? "Absent (-)" : ""
+          ]);
+        });
+        const csv = rows.map((r) => r.map((v) => `"${v}"`).join(",")).join("\n");
+        const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "PharmVR_Exp8_RabbitEye_Observations.csv";
+        a.click();
+        URL.revokeObjectURL(url);
+        showToast("Exported clinical observation table as CSV.");
+      });
+
+      // Sound Toggle
+      document.getElementById("btnSound").addEventListener("click", (e) => {
+        sfx.enabled = !sfx.enabled;
+        e.currentTarget.textContent = sfx.enabled ? "🔊 Sound On" : "🔇 Muted";
+      });
+
+      // Inspector Tabs
+      const switchTab = (tabId) => {
+        document.querySelectorAll(".tab-btn").forEach((b) => b.classList.toggle("active", b.dataset.tab === tabId));
+        document.querySelectorAll(".tab-pane").forEach((p) => p.classList.toggle("active", p.id === `tab-${tabId}`));
+      };
+      document.querySelectorAll(".tab-btn").forEach((btn) => {
+        btn.addEventListener("click", () => switchTab(btn.dataset.tab));
+      });
+      document.getElementById("btnQuickViva").addEventListener("click", () => switchTab("viva"));
+
+      // Viva Navigation
+      document.getElementById("btnVivaPrev").addEventListener("click", () => {
+        state.vivaIndex = (state.vivaIndex - 1 + VIVA_QUESTIONS.length) % VIVA_QUESTIONS.length;
+        renderViva();
+      });
+      document.getElementById("btnVivaNext").addEventListener("click", () => {
+        state.vivaIndex = (state.vivaIndex + 1) % VIVA_QUESTIONS.length;
+        renderViva();
+      });
+      document.getElementById("btnVivaReset").addEventListener("click", () => {
+        state.vivaAnswers.fill(null);
+        state.vivaIndex = 0;
+        renderViva();
+      });
+
+      /* =========================================================================
+       * 8. MAIN ANIMATION LOOP & INITIALIZATION
+       * ========================================================================= */
+      renderVialRack();
+      renderMechCard();
+      renderObsTable();
+      updateTelemetryUI();
+      renderViva();
+
+      let lastFrame = performance.now();
+      function loop(now) {
+        const dt = Math.min(0.05, (now - lastFrame) / 1000);
+        lastFrame = now;
+        updateSimulation(dt);
+        renderer.render(now);
+        requestAnimationFrame(loop);
+      }
+      requestAnimationFrame(loop);
+    })();
+  </script>
+</body>
+</html>

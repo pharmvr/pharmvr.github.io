@@ -1,0 +1,13 @@
+User-agent: *
+Allow: /
+Disallow: /private/
+
+Sitemap: https://pharmvr.github.io/sitemap.xml
+
+# Google
+User-agent: Googlebot
+Allow: /
+
+# Bing
+User-agent: Bingbot
+Allow: /

@@ -1,0 +1,181 @@
+/* ============================================
+   PharmVR 2D — Animated Lab Shell (LAB engine)
+   ============================================ */
+.lab2 {
+    display: grid;
+    grid-template-columns: 290px minmax(0, 1fr) 330px;
+    min-height: calc(100vh - 53px);
+    background: #eef2f6;
+}
+.lab2-col { padding: 14px; display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+.lab2-left { border-right: 1px solid var(--border); background: #f8fafc; overflow-y: auto; max-height: calc(100vh - 53px); }
+.lab2-right { border-left: 1px solid var(--border); background: #f8fafc; overflow-y: auto; max-height: calc(100vh - 53px); }
+.lab2-center { background: radial-gradient(ellipse at 50% 0%, #1e293b 0%, #0b1220 70%); padding: 16px; justify-content: flex-start; }
+
+.lab2-card {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 12px;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+}
+.lab2-card-h {
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 0.72rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
+    color: #475569; margin-bottom: 10px;
+}
+.lab2-pill { background: #f1f5f9; color: #334155; border-radius: 999px; padding: 1px 8px; font-size: 0.7rem; letter-spacing: 0; }
+
+/* protocol steps */
+.lab2-steps { list-style: none; display: flex; flex-direction: column; gap: 4px; }
+.lab2-steps li {
+    display: flex; gap: 9px; align-items: flex-start;
+    font-size: 0.79rem; line-height: 1.35; color: #94a3b8;
+    padding: 6px 8px; border-radius: 8px; transition: all 0.25s ease;
+}
+.lab2-stepnum {
+    flex: 0 0 20px; height: 20px; border-radius: 50%;
+    display: grid; place-items: center;
+    font-size: 0.68rem; font-weight: 700;
+    background: #f1f5f9; color: #94a3b8; border: 1px solid #e2e8f0;
+}
+.lab2-steps li.current { background: #f0fdfa; color: #0f172a; font-weight: 600; box-shadow: inset 3px 0 0 var(--primary); }
+.lab2-steps li.current .lab2-stepnum { background: var(--primary); color: #fff; border-color: var(--primary); animation: l2pulse 1.6s ease-in-out infinite; }
+.lab2-steps li.done { color: #475569; }
+.lab2-steps li.done .lab2-stepnum { background: #dcfce7; color: #15803d; border-color: #bbf7d0; }
+.lab2-steps li.done .lab2-stepnum::after { content: '✓'; }
+.lab2-steps li.done .lab2-stepnum { font-size: 0; }
+.lab2-steps li.done .lab2-stepnum::after { font-size: 0.7rem; }
+@keyframes l2pulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(13, 148, 136, 0.45); } 50% { box-shadow: 0 0 0 5px rgba(13, 148, 136, 0); } }
+
+/* treatments */
+.lab2-tr-list { display: flex; flex-direction: column; gap: 6px; }
+.lab2-tr {
+    display: flex; align-items: center; gap: 10px; text-align: left;
+    background: #fff; border: 1.5px solid #e2e8f0; border-radius: 10px;
+    padding: 8px 10px; cursor: pointer; font-family: inherit; transition: all 0.18s ease;
+}
+.lab2-tr:hover { border-color: #94a3b8; transform: translateX(2px); }
+.lab2-tr.active { border-color: var(--primary); background: #f0fdfa; box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.12); }
+.lab2-tr-swatch {
+    flex: 0 0 14px; height: 26px; border-radius: 4px;
+    background: linear-gradient(180deg, #1e293b 0 22%, var(--c) 22% 100%);
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,0.15);
+}
+.lab2-tr-txt { flex: 1; min-width: 0; }
+.lab2-tr-txt strong { display: block; font-size: 0.8rem; color: #0f172a; }
+.lab2-tr-txt small { display: block; font-size: 0.7rem; color: #64748b; }
+.lab2-tr-done { opacity: 0; color: #16a34a; font-weight: 800; }
+.lab2-tr.done .lab2-tr-done { opacity: 1; }
+
+/* custom controls */
+.lab2-field { display: flex; flex-direction: column; gap: 4px; margin-bottom: 10px; }
+.lab2-field label { display: flex; justify-content: space-between; font-size: 0.76rem; color: #475569; font-weight: 600; }
+.lab2-field input[type="range"] { width: 100%; accent-color: var(--primary); }
+.lab2-field select { font-family: inherit; font-size: 0.8rem; padding: 6px 8px; border-radius: 8px; border: 1px solid #cbd5e1; }
+.lab2-seg { display: flex; gap: 4px; flex-wrap: wrap; }
+.lab2-seg button { flex: 1; font-family: inherit; font-size: 0.74rem; padding: 6px 4px; border-radius: 7px; border: 1px solid #cbd5e1; background: #fff; cursor: pointer; }
+.lab2-seg button.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+
+.lab2-btnrow { display: flex; gap: 8px; }
+.lab2-btnrow .lab2-btn { flex: 1; }
+.lab2-btn {
+    font-family: inherit; font-size: 0.8rem; font-weight: 600;
+    padding: 9px 14px; border-radius: 9px; cursor: pointer;
+    border: 1px solid #cbd5e1; background: #fff; color: #0f172a;
+    transition: all 0.15s ease; white-space: nowrap;
+}
+.lab2-btn:hover:not(:disabled) { border-color: #64748b; transform: translateY(-1px); }
+.lab2-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+.lab2-btn.primary {
+    background: linear-gradient(180deg, #14b8a6, #0d9488); color: #fff; border-color: #0f766e;
+    box-shadow: 0 4px 14px -4px rgba(13, 148, 136, 0.7);
+}
+.lab2-btn.primary:hover:not(:disabled) { box-shadow: 0 6px 18px -4px rgba(13, 148, 136, 0.85); }
+.lab2-btn.danger { background: #fff1f2; border-color: #fecdd3; color: #be123c; }
+.lab2-btn.ghost { background: transparent; }
+
+/* stage */
+.lab2-stage {
+    position: relative; width: 100%; max-width: 1100px; margin: 0 auto;
+    aspect-ratio: 16 / 9; border-radius: 14px; overflow: hidden;
+    box-shadow: 0 30px 60px -20px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(148, 163, 184, 0.18);
+    background: #0b1220; user-select: none; touch-action: none;
+}
+.lab2-stage canvas { display: block; width: 100%; height: 100%; }
+.lab2-hud { position: absolute; top: 10px; display: flex; flex-direction: column; gap: 6px; pointer-events: none; }
+.lab2-hud-l { left: 10px; }
+.lab2-hud-r { right: 10px; align-items: flex-end; }
+.lab2-chip {
+    display: flex; align-items: baseline; gap: 8px;
+    background: rgba(8, 13, 24, 0.72); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(148, 163, 184, 0.22); border-radius: 8px;
+    padding: 4px 10px; color: #cbd5e1; font-size: 0.7rem; font-weight: 600;
+}
+.lab2-chip b { font-family: 'JetBrains Mono', monospace; font-size: 0.86rem; color: #5eead4; }
+.lab2-chip.warn b { color: #fbbf24; }
+.lab2-chip.bad b { color: #fb7185; }
+.lab2-chip.good b { color: #4ade80; }
+
+.lab2-lapse {
+    position: absolute; left: 50%; top: 12px; transform: translate(-50%, -150%);
+    background: rgba(8, 13, 24, 0.82); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(94, 234, 212, 0.35); border-radius: 10px;
+    padding: 7px 14px 9px; min-width: 260px; color: #e2e8f0; font-size: 0.78rem;
+    transition: transform 0.35s cubic-bezier(.2,.9,.3,1.2); pointer-events: none;
+}
+.lab2-lapse.show { transform: translate(-50%, 0); }
+.lab2-lapse-t b { font-family: 'JetBrains Mono', monospace; color: #5eead4; }
+.lab2-lapse-bar { height: 4px; background: rgba(148, 163, 184, 0.25); border-radius: 3px; margin-top: 6px; overflow: hidden; }
+.lab2-lapse-bar i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, #14b8a6, #5eead4); }
+
+.lab2-toast {
+    position: absolute; left: 50%; bottom: 14px; transform: translate(-50%, 30px);
+    opacity: 0; transition: all 0.3s ease; pointer-events: none;
+    background: rgba(8, 13, 24, 0.88); color: #e2e8f0; border-radius: 10px;
+    padding: 8px 16px; font-size: 0.8rem; max-width: 80%; text-align: center;
+    border: 1px solid rgba(148, 163, 184, 0.3);
+}
+.lab2-toast.show { opacity: 1; transform: translate(-50%, 0); }
+.lab2-toast.warn { border-color: rgba(251, 191, 36, 0.6); }
+.lab2-toast.success { border-color: rgba(74, 222, 128, 0.6); }
+.lab2-toast.error { border-color: rgba(251, 113, 133, 0.7); }
+
+.lab2-actionbar {
+    width: 100%; max-width: 1100px; margin: 0 auto;
+    display: flex; align-items: center; gap: 12px; justify-content: space-between;
+    background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(148, 163, 184, 0.18);
+    border-radius: 12px; padding: 10px 12px;
+}
+.lab2-status { color: #cbd5e1; font-size: 0.82rem; line-height: 1.4; flex: 1; min-width: 0; }
+.lab2-status b { color: #5eead4; }
+.lab2-actions { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+.lab2-center .lab2-btn:not(.primary) { background: rgba(30, 41, 59, 0.9); color: #e2e8f0; border-color: rgba(148, 163, 184, 0.35); }
+
+/* table */
+.lab2-table-wrap { max-height: 260px; overflow: auto; border-radius: 8px; border: 1px solid #eef2f6; }
+.lab2-table { width: 100%; border-collapse: collapse; font-size: 0.74rem; }
+.lab2-table th { position: sticky; top: 0; background: #f8fafc; text-align: left; padding: 6px 8px; color: #475569; font-weight: 700; border-bottom: 1px solid #e2e8f0; }
+.lab2-table td { padding: 6px 8px; border-bottom: 1px solid #f1f5f9; color: #1e293b; vertical-align: top; }
+.lab2-table tr.empty td { text-align: center; color: #94a3b8; padding: 16px; }
+.lab2-table tr.fresh td { animation: l2fresh 1.4s ease; }
+.lab2-table tr.up td:nth-child(2), .lab2-table .up { color: #15803d; font-weight: 700; }
+.lab2-table tr.down td:nth-child(2), .lab2-table .down { color: #be123c; font-weight: 700; }
+@keyframes l2fresh { from { background: #ccfbf1; } to { background: transparent; } }
+
+.lab2-infer { font-size: 0.8rem; line-height: 1.5; color: #334155; }
+.lab2-infer b { color: #0f766e; }
+.lab2-infer .kv { display: flex; justify-content: space-between; border-bottom: 1px dashed #e2e8f0; padding: 3px 0; }
+.lab2-infer .kv span:last-child { font-family: 'JetBrains Mono', monospace; font-weight: 600; color: #0f172a; }
+
+@media (max-width: 1280px) {
+    .lab2 { grid-template-columns: 260px minmax(0, 1fr); }
+    .lab2-right { grid-column: 1 / -1; border-left: none; border-top: 1px solid var(--border); max-height: none; display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+}
+@media (max-width: 860px) {
+    .lab2 { grid-template-columns: 1fr; }
+    .lab2-left { max-height: none; order: 2; }
+    .lab2-center { order: 1; padding: 8px; }
+    .lab2-right { order: 3; }
+    .lab2-actionbar { flex-direction: column; align-items: stretch; }
+}

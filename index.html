@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PharmVR 2D — Free ExPharm Alternative | Interactive Pharmacology Lab Simulator</title>
+    <meta name="description" content="Free, open-access alternative to ExPharm. PharmVR 2D features 31 interactive pharmacology experiments with real-time 2D simulations, animated lab animals, and viva-voce assessments for pharmacy students.">
+    <meta name="keywords" content="expharm alternative, free pharmacology lab, interactive pharmacology simulator, pharmacology experiments, virtual pharmacology lab, lab rat simulator, pharmacy education, computer-assisted learning">
+    <meta name="author" content="Karthik Thiyagarajan">
+    <meta name="google-site-verification" content="QQ0Q0cNfTvMGvl5bljlnndUcc_mFA-Au18JLr-3xh98">
+    <meta property="og:title" content="PharmVR 2D — Interactive Pharmacology Lab">
+    <meta property="og:description" content="Free, open-access 2D interactive pharmacology lab. 31 experiments with real-time simulations, animated graphics, and viva-voce assessments.">
+    <meta property="og:image" content="https://pharmvr.github.io/pharmvr-2d/assets/og-image.png">
+    <meta property="og:url" content="https://pharmvr.github.io/pharmvr-2d/">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="PharmVR 2D — Interactive Pharmacology Lab">
+    <meta name="twitter:description" content="Free, open-access alternative to ExPharm. PharmVR 2D features 31 interactive pharmacology experiments with real-time 2D simulations for pharmacy students.">
+    <link rel="icon" type="image/png" href="assets/favicon.png">
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "PharmVR 2D",
+        "description": "Free, open-access alternative to ExPharm. Interactive pharmacology lab simulator with 31 experiments.",
+        "url": "https://pharmvr.github.io/pharmvr-2d/",
+        "applicationCategory": "EducationalApplication",
+        "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "USD"
+        },
+        "author": {
+            "@type": "Person",
+            "name": "Karthik Thiyagarajan",
+            "url": "https://www.linkedin.com/in/karthik-thiyagarajan/"
+        },
+        "aggregateRating": {
+            "@type": "AggregateRating",
+            "ratingValue": "5",
+            "ratingCount": "1"
+        },
+        "keywords": "expharm alternative, pharmacology lab, interactive simulator, pharmacy education"
+    }
+    </script>
+    <link rel="apple-touch-icon" href="assets/logo.png">
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/experiment.css">
+    <link rel="stylesheet" href="css/tutorial.css">
+    <link rel="stylesheet" href="css/lab2.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- ============================================ -->
+    <!-- LANDING PAGE                                 -->
+    <!-- ============================================ -->
+    <div id="landing-page" class="page active">
+        <!-- Hero Section -->
+        <header class="hero">
+            <nav class="nav-bar">
+                <div class="nav-brand">
+                    <div class="brand-icon">
+                        <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+                            <!-- Rat head -->
+                            <ellipse cx="20" cy="18" rx="10" ry="12" fill="currentColor" opacity="0.85"/>
+                            <!-- Rat ears -->
+                            <circle cx="12" cy="8" r="4" fill="currentColor" opacity="0.85"/>
+                            <circle cx="28" cy="8" r="4" fill="currentColor" opacity="0.85"/>
+                            <circle cx="12" cy="8" r="2.5" fill="white" opacity="0.5"/>
+                            <circle cx="28" cy="8" r="2.5" fill="white" opacity="0.5"/>
+                            <!-- Rat eyes -->
+                            <circle cx="16" cy="16" r="1.5" fill="white"/>
+                            <circle cx="24" cy="16" r="1.5" fill="white"/>
+                            <!-- Rat snout -->
+                            <ellipse cx="20" cy="22" rx="3" ry="2.5" fill="white" opacity="0.7"/>
+                            <!-- Rat nose -->
+                            <circle cx="20" cy="21" r="1" fill="currentColor" opacity="0.6"/>
+                            <!-- Rat whiskers -->
+                            <line x1="10" y1="20" x2="8" y2="19" stroke="currentColor" stroke-width="0.8" opacity="0.6"/>
+                            <line x1="10" y1="22" x2="8" y2="22" stroke="currentColor" stroke-width="0.8" opacity="0.6"/>
+                            <line x1="30" y1="20" x2="32" y2="19" stroke="currentColor" stroke-width="0.8" opacity="0.6"/>
+                            <line x1="30" y1="22" x2="32" y2="22" stroke="currentColor" stroke-width="0.8" opacity="0.6"/>
+                            <!-- Rat tail -->
+                            <path d="M24 28 Q28 30 30 32" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" opacity="0.7"/>
+                        </svg>
+                    </div>
+                    <span class="brand-text">PharmVR <span class="brand-accent">2D Beta</span></span>
+                </div>
+                <div class="nav-links">
+                    <a href="#experiments" class="nav-link">Experiments</a>
+                    <a href="#features" class="nav-link">Features</a>
+                    <a href="#about" class="nav-link">About</a>
+                    <button class="btn btn-primary btn-sm" onclick="scrollToExperiments()">Start Learning</button>
+                </div>
+                <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
+                    <span></span><span></span><span></span>
+                </button>
+            </nav>
+
+            <div class="hero-content">
+                <div class="hero-badge">🧪 Free & Open Access — No Login Required</div>
+                <h1 class="hero-title">
+                    Interactive <span class="gradient-text">Pharmacology</span> Lab
+                </h1>
+                <p class="hero-subtitle">
+                    The free, open-access alternative to ExPharm. 31 interactive pharmacology experiments with real-time
+                    2D simulations, animated lab animals, pharmacological accuracy, and viva-voce assessments for pharmacy students.
+                </p>
+                <div class="hero-stats">
+                    <div class="stat">
+                        <span class="stat-num">31</span>
+                        <span class="stat-label">Experiments</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-num">6</span>
+                        <span class="stat-label">Simulation Engines</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-num">100%</span>
+                        <span class="stat-label">Syllabus Accurate</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-num">Free</span>
+                        <span class="stat-label">Forever</span>
+                    </div>
+                </div>
+                <div class="hero-actions">
+                    <button class="btn btn-primary btn-lg" onclick="launchExperiment(8)">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                        Launch Experiment 8: Rabbit Eye
+                    </button>
+                    <button class="btn btn-outline btn-lg" onclick="scrollToExperiments()">
+                        Browse All Experiments
+                    </button>
+                </div>
+            </div>
+
+            <!-- Animated background elements -->
+            <div class="hero-bg-elements">
+                <div class="bg-molecule bg-mol-1"></div>
+                <div class="bg-molecule bg-mol-2"></div>
+                <div class="bg-molecule bg-mol-3"></div>
+                <div class="bg-pulse bg-pulse-1"></div>
+                <div class="bg-pulse bg-pulse-2"></div>
+            </div>
+        </header>
+
+        <!-- Features Section -->
+        <section id="features" class="features-section">
+            <h2 class="section-title">Why PharmVR 2D?</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🎯</div>
+                    <h3>Accurate Pharmacology</h3>
+                    <p>Every drug mechanism, receptor interaction, and physiological response precisely modeled from the HEB-NIC syllabus.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🎮</div>
+                    <h3>Interactive Simulations</h3>
+                    <p>Drag-and-drop instruments, animated tissue responses, real-time dose-response curves, and live kymograph recording.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h3>Auto Lab Records</h3>
+                    <p>Observation tables auto-populate as you perform experiments. Export printable PDF lab records instantly.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🎓</div>
+                    <h3>Viva-Voce Ready</h3>
+                    <p>Built-in quiz system after each experiment with detailed pharmacological explanations for exam preparation.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">💡</div>
+                    <h3>Guided Tutorials</h3>
+                    <p>Step-by-step spotlight walkthroughs teach you exactly how each experiment works, from baseline to conclusion.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🌐</div>
+                    <h3>Zero Installation</h3>
+                    <p>Works in any modern browser. No downloads, no plugins, no logins. Just open and start learning.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Experiments Directory -->
+        <section id="experiments" class="experiments-section">
+            <h2 class="section-title">31 Experiments Directory</h2>
+            <p class="section-desc">Complete coverage of the HEB-NIC Experimental Pharmacology Lab Manual</p>
+            
+            <!-- Filters -->
+            <div class="filter-bar">
+                <div class="search-box">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+                    <input type="text" id="exp-search" placeholder="Search experiments..." oninput="filterExperiments()">
+                </div>
+                <div class="filter-tags">
+                    <button class="filter-tag active" data-filter="all" onclick="setFilter('all')">All (31)</button>
+                    <button class="filter-tag" data-filter="cns" onclick="setFilter('cns')">CNS & Behaviour</button>
+                    <button class="filter-tag" data-filter="ocular" onclick="setFilter('ocular')">Ocular</button>
+                    <button class="filter-tag" data-filter="tissue" onclick="setFilter('tissue')">Isolated Tissue</button>
+                    <button class="filter-tag" data-filter="bioassay" onclick="setFilter('bioassay')">Bioassay & DRC</button>
+                    <button class="filter-tag" data-filter="cardio" onclick="setFilter('cardio')">Cardiovascular</button>
+                    <button class="filter-tag" data-filter="special" onclick="setFilter('special')">Special</button>
+                </div>
+            </div>
+
+            <!-- Experiment Cards Grid -->
+            <div id="exp-grid" class="exp-grid">
+                <!-- Populated by JS -->
+            </div>
+        </section>
+
+        <!-- About -->
+        <section id="about" class="about-section">
+            <div class="about-content">
+                <h2>About PharmVR 2D Beta</h2>
+                <p>PharmVR 2D Beta is a free, open-access educational platform built to replace outdated ExPharm software. 
+                   Designed for B.Pharm, Pharm.D, and MBBS students, it covers all 31 experiments from the 
+                   HEB-NIC Experimental Pharmacology Lab Manual with interactive 2D simulations, accurate pharmacological modeling, 
+                   and comprehensive viva-voce preparation.</p>
+                <p class="about-note">📖 Syllabus Reference: HEB-NIC Experimental Pharmacology Lab Manual (2025 Edition)</p>
+            </div>
+        </section>
+
+        <footer class="footer">
+            <p>PharmVR 2D Beta — ExPharm Alternative © 2026 | Free & Open Access | Built for Pharmacy & Medical Students</p>
+            <p style="margin-top: 0.5rem; font-size: 0.9rem; opacity: 0.8;">Created by <a href="https://www.linkedin.com/in/karthik-thiyagarajan/" target="_blank" style="color: inherit; text-decoration: underline;">Karthik Thiyagarajan</a> | <a href="https://www.linkedin.com/in/karthik-thiyagarajan/" target="_blank" style="color: inherit; text-decoration: underline;">LinkedIn</a></p>
+        </footer>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- EXPERIMENT PAGE (Experiment 8 - Rabbit Eye)  -->
+    <!-- ============================================ -->
+    <div id="experiment-page" class="page">
+        <!-- Top Bar -->
+        <div class="lab-topbar">
+            <button class="btn-back" onclick="goHome()">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                Back to Lab
+            </button>
+            <div class="lab-title-bar">
+                <span class="exp-badge">EXP 8</span>
+                <span class="exp-title-text">Effect of Various Drugs on Rabbit's Eye</span>
+            </div>
+            <div class="lab-mode-selector">
+                <button class="mode-btn active" data-mode="guided" onclick="setMode('guided')">📖 Guided</button>
+                <button class="mode-btn" data-mode="practice" onclick="setMode('practice')">🔬 Practice</button>
+                <button class="mode-btn" data-mode="exam" onclick="setMode('exam')">📝 Exam</button>
+            </div>
+        </div>
+
+        <!-- Main Lab Area -->
+        <div class="lab-container">
+            <!-- Left Panel: Controls & Drug Rack -->
+            <div class="lab-panel lab-left">
+                <div class="panel-section">
+                    <h3 class="panel-heading">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2V9M9 21H5a2 2 0 0 1-2-2V9m0 0h18"/></svg>
+                        Drug Rack
+                    </h3>
+                    <div id="drug-rack" class="drug-rack">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+
+                <div class="panel-section">
+                    <h3 class="panel-heading">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l2 2"/></svg>
+                        Experiment Controls
+                    </h3>
+                    <div class="controls-group">
+                        <div class="eye-selector">
+                            <label class="control-label">Active Eye</label>
+                            <div class="toggle-group">
+                                <button class="toggle-btn" id="btn-eye-left" onclick="switchEye('left')">
+                                    👁️ Left (Control)
+                                </button>
+                                <button class="toggle-btn active" id="btn-eye-right" onclick="switchEye('right')">
+                                    👁️ Right (Test)
+                                </button>
+                            </div>
+                        </div>
+                        <button class="btn btn-action btn-absorb" id="btn-absorb" onclick="advanceTime()">
+                            ⏱️ Wait 8 min (Absorption)
+                        </button>
+                        <button class="btn btn-action btn-reset" onclick="resetRabbit()">
+                            🐇 New Rabbit
+                        </button>
+                    </div>
+                </div>
+
+                <div class="panel-section">
+                    <h3 class="panel-heading">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20V10M18 20V4M6 20v-4"/></svg>
+                        Score
+                    </h3>
+                    <div class="score-panel">
+                        <div class="score-item">
+                            <span class="score-label">Progress</span>
+                            <div class="progress-bar">
+                                <div class="progress-fill progress-score" id="progress-score"></div>
+                            </div>
+                            <span class="score-value" id="score-val">12</span>
+                        </div>
+                        <div class="score-item">
+                            <span class="score-label">Doubt Meter</span>
+                            <div class="progress-bar">
+                                <div class="progress-fill progress-doubt" id="progress-doubt"></div>
+                            </div>
+                            <span class="score-value" id="doubt-val">0</span>
+                        </div>
+                        <div class="score-item">
+                            <span class="score-label">Drugs Tested</span>
+                            <span class="score-value" id="drugs-tested">0 / 5</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Center: Main Canvas & Eye Visualization -->
+            <div class="lab-center">
+                <!-- Tool Inventory Bar -->
+                <div class="tool-bar">
+                    <button class="tool-btn" data-tool="caliper" onclick="useTool('caliper')" title="Vernier Caliper — Measure pupil diameter">
+                        <div class="tool-icon">📏</div>
+                        <span class="tool-name">Caliper</span>
+                        <span class="tool-key">1</span>
+                    </button>
+                    <button class="tool-btn" data-tool="torch" onclick="useTool('torch')" title="Pen-Torch — Test light reflex">
+                        <div class="tool-icon">🔦</div>
+                        <span class="tool-name">Pen-Torch</span>
+                        <span class="tool-key">2</span>
+                    </button>
+                    <button class="tool-btn" data-tool="cotton" onclick="useTool('cotton')" title="Cotton Wisp — Test corneal reflex">
+                        <div class="tool-icon">🧶</div>
+                        <span class="tool-name">Cotton Wisp</span>
+                        <span class="tool-key">3</span>
+                    </button>
+                    <button class="tool-btn active" data-tool="dropper" onclick="useTool('dropper')" title="Dropper — Instil drug drops">
+                        <div class="tool-icon">💧</div>
+                        <span class="tool-name">Dropper</span>
+                        <span class="tool-key">4</span>
+                    </button>
+                    <button class="tool-btn" data-tool="journal" onclick="toggleJournal()" title="Lab Journal — View observation table">
+                        <div class="tool-icon">📓</div>
+                        <span class="tool-name">Journal</span>
+                        <span class="tool-key">5</span>
+                    </button>
+                </div>
+
+                <!-- Rabbit Scene -->
+                <div class="rabbit-scene" id="rabbit-scene">
+                    <!-- Interactive Layered 2D Stage -->
+                    <div class="rabbit-container">
+                        <div class="game-stage-wrap" id="exp8-stage" style="width:640px;height:420px;">
+                            <canvas id="rabbit-canvas" width="640" height="420"></canvas>
+                            <div id="exp8-eye-target" class="drop-target-ring" style="left:454px;top:131px;width:62px;height:62px;"></div>
+                            <div class="game-bench-dock" id="exp8-bench-dock"></div>
+                        </div>
+                        <div class="rabbit-label">🎮 Drag any instrument from the bench dock directly onto the Rabbit's Eye (or click bottles to switch drugs)</div>
+                    </div>
+
+                    <!-- Eye Close-up Magnifier -->
+                    <div class="eye-magnifier" id="eye-magnifier">
+                        <div class="magnifier-frame">
+                            <div class="magnifier-label" id="magnifier-label">RIGHT EYE (Test)</div>
+                            <canvas id="eye-canvas" width="280" height="280"></canvas>
+                            <div class="eye-reading" id="eye-reading">Pupil: 5.5 mm</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Feedback -->
+                <div class="feedback-bar" id="feedback-bar">
+                    <div class="feedback-icon" id="feedback-icon">ℹ️</div>
+                    <div class="feedback-text" id="feedback-text">Select a drug from the rack, then use the Dropper [4] to instil drops into the rabbit's eye.</div>
+                </div>
+            </div>
+
+            <!-- Right Panel: Observation Table & Info -->
+            <div class="lab-panel lab-right">
+                <div class="panel-section">
+                    <h3 class="panel-heading">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+                        Observation Table
+                    </h3>
+                    <div class="obs-table-container" id="obs-table-container">
+                        <table class="obs-table" id="obs-table">
+                            <thead>
+                                <tr>
+                                    <th>Drug</th>
+                                    <th>Pupil (mm)</th>
+                                    <th>Light Ref.</th>
+                                    <th>Corneal Ref.</th>
+                                </tr>
+                            </thead>
+                            <tbody id="obs-tbody">
+                                <!-- Populated by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="panel-section">
+                    <h3 class="panel-heading">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2zM22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+                        Drug Info
+                    </h3>
+                    <div class="drug-info-panel" id="drug-info">
+                        <div class="drug-info-name" id="info-drug-name">Atropine (1%)</div>
+                        <div class="drug-info-class" id="info-drug-class">Parasympatholytic (blocks M₃ receptors on circular sphincter)</div>
+                        <div class="drug-info-summary" id="info-drug-summary">Blocks M₃ receptors on circular muscle → mydriasis & paralysis of pupillary light reflex.</div>
+                        <div class="drug-info-expected">
+                            <div class="info-row">
+                                <span class="info-label">Expected Pupil:</span>
+                                <span class="info-value" id="info-pupil">Mydriasis (Dilated)</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Light Reflex:</span>
+                                <span class="info-value" id="info-light">Absent</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Corneal Reflex:</span>
+                                <span class="info-value" id="info-corneal">Present</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel-section">
+                    <button class="btn btn-primary btn-block" onclick="startViva()">
+                        🎓 Take Viva Voce Quiz
+                    </button>
+                    <button class="btn btn-outline btn-block" onclick="exportLabRecord()" style="margin-top: 8px;">
+                        📄 Export Lab Record (PDF)
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- UNIVERSAL LAB PAGE (Exps 1-7, 9-31)          -->
+    <!-- ============================================ -->
+    <div id="universal-lab-page" class="page">
+        <div class="lab-topbar">
+            <button class="btn-back" onclick="goHome()">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                Back to Lab
+            </button>
+            <div class="lab-title-bar">
+                <span class="exp-badge" id="uni-exp-badge">EXP 1</span>
+                <span class="exp-title-text" id="uni-exp-title">Experiment Title</span>
+            </div>
+            <div class="exp-status live" id="uni-engine-badge">Simulation Engine</div>
+        </div>
+        <div id="universal-lab-mount"></div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- VIVA VOCE MODAL                              -->
+    <!-- ============================================ -->
+    <div class="modal-overlay" id="viva-modal">
+        <div class="modal viva-modal">
+            <div class="modal-header">
+                <h2>🎓 Viva Voce — Experiment 8</h2>
+                <button class="modal-close" onclick="closeViva()">✕</button>
+            </div>
+            <div class="viva-progress">
+                <div class="viva-progress-bar">
+                    <div class="viva-progress-fill" id="viva-progress-fill"></div>
+                </div>
+                <span id="viva-qnum">Question 1 of 5</span>
+            </div>
+            <div class="viva-body" id="viva-body">
+                <p class="viva-question" id="viva-question"></p>
+                <div class="viva-options" id="viva-options"></div>
+                <div class="viva-explanation hidden" id="viva-explanation"></div>
+            </div>
+            <div class="viva-footer">
+                <button class="btn btn-primary" id="viva-next-btn" onclick="vivaNext()" style="display:none;">Next Question →</button>
+                <div class="viva-score-display hidden" id="viva-score-display"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- JOURNAL / LAB RECORD MODAL                   -->
+    <!-- ============================================ -->
+    <div class="modal-overlay" id="journal-modal">
+        <div class="modal journal-modal">
+            <div class="modal-header">
+                <h2>📓 Lab Journal — Experiment 8</h2>
+                <button class="modal-close" onclick="toggleJournal()">✕</button>
+            </div>
+            <div class="journal-body" id="journal-body">
+                <div class="journal-section">
+                    <h3>Experiment 8: Effect of Various Drugs on Rabbit's Eye</h3>
+                    <p><strong>Aim:</strong> To study the effect of autonomic drugs and local anaesthetics on the pupil diameter, light reflex, and corneal reflex of the rabbit's eye.</p>
+                    <p><strong>Animal:</strong> Albino Rabbit (unpigmented iris provides contrast for measurement)</p>
+                    <p><strong>Control:</strong> Left Eye — Normal Saline (0.9%)</p>
+                    <p><strong>Test:</strong> Right Eye — Drug under investigation</p>
+                </div>
+                <div class="journal-section">
+                    <h3>Observation Table</h3>
+                    <table class="journal-table" id="journal-table">
+                        <thead>
+                            <tr>
+                                <th>Drug</th>
+                                <th>Eye</th>
+                                <th>Class / Mechanism</th>
+                                <th>Baseline Pupil</th>
+                                <th>Post-Drug Pupil</th>
+                                <th>Light Reflex</th>
+                                <th>Corneal Reflex</th>
+                            </tr>
+                        </thead>
+                        <tbody id="journal-tbody"></tbody>
+                    </table>
+                </div>
+                <div class="journal-section">
+                    <h3>Key Conclusions</h3>
+                    <ul>
+                        <li><strong>Atropine vs Ephedrine:</strong> Both produce mydriasis but only Atropine abolishes the light reflex (M₃ block).</li>
+                        <li><strong>Physostigmine:</strong> Causes miosis via AChE inhibition (↑ACh at M₃).</li>
+                        <li><strong>Lignocaine:</strong> Only drug to abolish corneal reflex (Na⁺ channel block) without pupil change.</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="journal-footer">
+                <button class="btn btn-primary" onclick="exportLabRecord()">📄 Export as PDF</button>
+                <button class="btn btn-outline" onclick="toggleJournal()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- TUTORIAL SPOTLIGHT OVERLAY                   -->
+    <!-- ============================================ -->
+    <div class="tutorial-overlay" id="tutorial-overlay">
+        <div class="tutorial-spotlight" id="tutorial-spotlight"></div>
+        <div class="tutorial-popover" id="tutorial-popover">
+            <div class="tutorial-step-indicator" id="tutorial-step-indicator"></div>
+            <h3 class="tutorial-title" id="tutorial-title"></h3>
+            <p class="tutorial-text" id="tutorial-text"></p>
+            <div class="tutorial-actions">
+                <button class="btn btn-sm btn-outline" id="tutorial-skip" onclick="skipTutorial()">Skip Tutorial</button>
+                <button class="btn btn-sm btn-primary" id="tutorial-next" onclick="nextTutorialStep()">Next →</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/svg-assets.js"></script>
+    <script src="js/drag-game.js"></script>
+    <script src="js/pharmacology.js"></script>
+    <script src="js/renderer.js"></script>
+    <script src="js/experiments-data.js"></script>
+    <script src="js/tutorial.js"></script>
+    <script src="js/engines/cns-engine.js"></script>
+    <script src="js/engines/tissue-engine.js"></script>
+    <script src="js/engines/bioassay-engine.js"></script>
+    <script src="js/engines/cardio-engine.js"></script>
+    <script src="js/engines/special-engine.js"></script>
+    <script src="js/lab/core.js"></script>
+    <script src="js/lab/rodent.js"></script>
+    <script src="js/lab/engine.js"></script>
+    <script src="js/lab/exp/exp01-rotarod.js"></script>
+    <script src="js/lab/exp/exp08-rabbiteye.js"></script>
+    <script src="js/lab/exp/exp02-actophotometer.js"></script>
+    <script src="js/lab/exp/exp03-tailflick.js"></script>
+    <script src="js/lab/exp/exp05-hotplate.js"></script>
+    <script src="js/lab/exp/exp06-epm.js"></script>
+    <script src="js/lab/exp/exp07-mes.js"></script>
+    <script src="js/lab/exp/exp23-ld50.js"></script>
+    <script src="js/lab/exp/exp24-pawoedema.js"></script>
+    <script src="js/lab/exp/exp25-antipyretic.js"></script>
+    <script src="js/lab/exp/exp26-diuretic.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>

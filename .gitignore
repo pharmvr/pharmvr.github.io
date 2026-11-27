@@ -1,0 +1,16 @@
+# Development & temporary files
+NEON_*.md
+.env
+.env.local
+*.log
+.DS_Store
+node_modules/
+dist/
+.idea/
+.vscode/
+*.swp
+*~
+
+# Credentials
+credentials.json
+.claude/settings.local.json
