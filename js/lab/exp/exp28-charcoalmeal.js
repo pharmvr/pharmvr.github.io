@@ -193,7 +193,10 @@
         }
 
         onInjected(tr) {
-            this.injected = tr;
+            // cfg.treatments holds only the display fields, so resolve back to the
+            // full drug record — otherwise `transit` is undefined and the
+            // percentage comes out NaN
+            this.injected = DRUGS.find(d => d.id === tr.id) || tr;
             this.floatText(this.mouse.x, this.mouse.y - 56, `${tr.short}`, tr.color);
             this.phase = 'wait1';
             this.setStep(2);
