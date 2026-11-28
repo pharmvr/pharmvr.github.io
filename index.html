@@ -4,26 +4,29 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PharmVR 2D — Free ExPharm Alternative | Interactive Pharmacology Lab Simulator</title>
-    <meta name="description" content="Free, open-access alternative to ExPharm. PharmVR 2D features 31 interactive pharmacology experiments with real-time 2D simulations, animated lab animals, and viva-voce assessments for pharmacy students.">
+    <meta name="description" content="Free alternative to ExPharm. PharmVR 2D features 31 interactive pharmacology experiments with real-time 2D simulations, animated lab animals, and viva-voce assessments for pharmacy students.">
     <meta name="keywords" content="expharm alternative, free pharmacology lab, interactive pharmacology simulator, pharmacology experiments, virtual pharmacology lab, lab rat simulator, pharmacy education, computer-assisted learning">
     <meta name="author" content="Karthik Thiyagarajan">
     <meta name="google-site-verification" content="QQ0Q0cNfTvMGvl5bljlnndUcc_mFA-Au18JLr-3xh98">
     <meta property="og:title" content="PharmVR 2D — Interactive Pharmacology Lab">
-    <meta property="og:description" content="Free, open-access 2D interactive pharmacology lab. 31 experiments with real-time simulations, animated graphics, and viva-voce assessments.">
+    <meta property="og:description" content="Free 2D interactive pharmacology lab. 31 experiments with real-time simulations, animated graphics, and viva-voce assessments.">
     <meta property="og:image" content="https://pharmvr.github.io/assets/logo.png">
     <meta property="og:url" content="https://pharmvr.github.io/">
     <meta property="og:type" content="website">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="PharmVR 2D — Interactive Pharmacology Lab">
-    <meta name="twitter:description" content="Free, open-access alternative to ExPharm. PharmVR 2D features 31 interactive pharmacology experiments with real-time 2D simulations for pharmacy students.">
+    <meta name="twitter:description" content="Free alternative to ExPharm. PharmVR 2D features 31 interactive pharmacology experiments with real-time 2D simulations for pharmacy students.">
     <link rel="canonical" href="https://pharmvr.github.io/">
-    <link rel="icon" type="image/png" href="assets/favicon.png">
+    <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+    <link rel="alternate icon" type="image/png" href="assets/favicon.png">
+    <meta name="theme-color" content="#0C2149">
+    <meta name="copyright" content="© Dr. Karthik Thiyagarajan. All rights reserved.">
     <script type="application/ld+json">
     {
         "@context": "https://schema.org",
         "@type": "SoftwareApplication",
         "name": "PharmVR 2D",
-        "description": "Free, open-access alternative to ExPharm. Interactive pharmacology lab simulator with 31 experiments.",
+        "description": "Free alternative to ExPharm. Interactive pharmacology lab simulator with 31 experiments.",
         "url": "https://pharmvr.github.io/",
         "applicationCategory": "EducationalApplication",
         "offers": {
@@ -44,11 +47,12 @@
         "keywords": "expharm alternative, pharmacology lab, interactive simulator, pharmacy education"
     }
     </script>
-    <link rel="apple-touch-icon" href="assets/logo.png">
+    <link rel="apple-touch-icon" href="assets/pharmvr-logo.png">
     <link rel="stylesheet" href="css/main.css">
     <link rel="stylesheet" href="css/experiment.css">
     <link rel="stylesheet" href="css/tutorial.css">
     <link rel="stylesheet" href="css/lab2.css">
+    <link rel="stylesheet" href="css/brand.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -61,34 +65,9 @@
         <!-- Hero Section -->
         <header class="hero">
             <nav class="nav-bar">
-                <div class="nav-brand">
-                    <div class="brand-icon">
-                        <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
-                            <!-- Rat head -->
-                            <ellipse cx="20" cy="18" rx="10" ry="12" fill="currentColor" opacity="0.85"/>
-                            <!-- Rat ears -->
-                            <circle cx="12" cy="8" r="4" fill="currentColor" opacity="0.85"/>
-                            <circle cx="28" cy="8" r="4" fill="currentColor" opacity="0.85"/>
-                            <circle cx="12" cy="8" r="2.5" fill="white" opacity="0.5"/>
-                            <circle cx="28" cy="8" r="2.5" fill="white" opacity="0.5"/>
-                            <!-- Rat eyes -->
-                            <circle cx="16" cy="16" r="1.5" fill="white"/>
-                            <circle cx="24" cy="16" r="1.5" fill="white"/>
-                            <!-- Rat snout -->
-                            <ellipse cx="20" cy="22" rx="3" ry="2.5" fill="white" opacity="0.7"/>
-                            <!-- Rat nose -->
-                            <circle cx="20" cy="21" r="1" fill="currentColor" opacity="0.6"/>
-                            <!-- Rat whiskers -->
-                            <line x1="10" y1="20" x2="8" y2="19" stroke="currentColor" stroke-width="0.8" opacity="0.6"/>
-                            <line x1="10" y1="22" x2="8" y2="22" stroke="currentColor" stroke-width="0.8" opacity="0.6"/>
-                            <line x1="30" y1="20" x2="32" y2="19" stroke="currentColor" stroke-width="0.8" opacity="0.6"/>
-                            <line x1="30" y1="22" x2="32" y2="22" stroke="currentColor" stroke-width="0.8" opacity="0.6"/>
-                            <!-- Rat tail -->
-                            <path d="M24 28 Q28 30 30 32" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" opacity="0.7"/>
-                        </svg>
-                    </div>
-                    <span class="brand-text">PharmVR <span class="brand-accent">2D Beta</span></span>
-                </div>
+                <a class="nav-brand" href="#" onclick="goHome();return false;" aria-label="PharmVR home">
+                    <img class="brand-logo" src="assets/pharmvr-logo.png" alt="PharmVR" draggable="false">
+                </a>
                 <div class="nav-links">
                     <a href="#experiments" class="nav-link">Experiments</a>
                     <a href="#features" class="nav-link">Features</a>
@@ -101,13 +80,15 @@
             </nav>
 
             <div class="hero-content">
-                <div class="hero-badge">🧪 Free & Open Access — No Login Required</div>
+                <img class="hero-logo" src="assets/pharmvr-logo.png" alt="PharmVR" draggable="false">
+                <div class="hero-badge"><span class="dot"></span> Free to use · All 31 experiments · No login required</div>
                 <h1 class="hero-title">
-                    Interactive <span class="gradient-text">Pharmacology</span> Lab
+                    The Interactive <span class="grad">Pharmacology</span> Laboratory
                 </h1>
                 <p class="hero-subtitle">
-                    The free, open-access alternative to ExPharm. 31 interactive pharmacology experiments with real-time
-                    2D simulations, animated lab animals, pharmacological accuracy, and viva-voce assessments for pharmacy students.
+                    A free alternative to ExPharm. Thirty-one experiments simulated from real pharmacological models —
+                    Hill equations, Schild regressions and live kymograph tracings — so the results emerge from the
+                    science rather than from a script.
                 </p>
                 <div class="hero-stats">
                     <div class="stat">
@@ -215,19 +196,85 @@
 
         <!-- About -->
         <section id="about" class="about-section">
-            <div class="about-content">
-                <h2>About PharmVR 2D Beta</h2>
-                <p>PharmVR 2D Beta is a free, open-access educational platform built to replace outdated ExPharm software. 
-                   Designed for B.Pharm, Pharm.D, and MBBS students, it covers all 31 experiments from the 
-                   HEB-NIC Experimental Pharmacology Lab Manual with interactive 2D simulations, accurate pharmacological modeling, 
-                   and comprehensive viva-voce preparation.</p>
-                <p class="about-note">📖 Syllabus Reference: HEB-NIC Experimental Pharmacology Lab Manual (2025 Edition)</p>
+            <span class="section-eyebrow">The person behind it</span>
+            <h2 class="section-title">About</h2>
+            <p class="section-subtitle">PharmVR is built and maintained by a practising pharmacy academic, not a software studio.</p>
+
+            <div class="author-card">
+                <div class="author-mark">KT</div>
+                <div>
+                    <div class="author-name">Dr. Karthik Thiyagarajan</div>
+                    <div class="author-role">Pharm.D · Pharmacology educator · Creator of PharmVR</div>
+                    <p class="author-bio">
+                        PharmVR began with a simple frustration: the software students use to learn experimental
+                        pharmacology is dated, expensive and often unavailable when it matters. Every one of the
+                        thirty-one experiments here is modelled on the real pharmacology — Hill equations for
+                        concentration–response curves, Schild regression for antagonist affinity, parallel-line
+                        bioassay arithmetic — so that the classical teaching results emerge from the simulation
+                        instead of being written into it. Students see <em>why</em> curare shifts an acetylcholine
+                        curve to the right, why calcium arrests a heart in systole and potassium in diastole, and
+                        why adrenaline reverses after alpha blockade.
+                    </p>
+                    <p class="author-bio">
+                        The long-term aim is a full 3D virtual-reality pharmacology laboratory. This 2D platform is
+                        the working foundation for it, and the research case for the approach is published as a
+                        peer-review preprint.
+                    </p>
+                    <div class="author-links">
+                        <a class="author-link primary" href="https://www.linkedin.com/in/karthik-thiyagarajan/" target="_blank" rel="noopener">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M19 3A2 2 0 0 1 21 5v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.32 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.79M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .92.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"/></svg>
+                            Connect on LinkedIn
+                        </a>
+                        <a class="author-link" href="https://www.preprints.org/manuscript/202507.0959" target="_blank" rel="noopener">
+                            📄 Read the research preprint
+                        </a>
+                        <a class="author-link" href="#experiments">🧪 Browse the experiments</a>
+                    </div>
+                </div>
             </div>
+
+            <div class="roadmap">
+                <div class="roadmap-item now">
+                    <span class="phase">Phase 1 · Live now</span>
+                    <h4>PharmVR 2D</h4>
+                    <p>All 31 experiments running in the browser, free, on any device. Procedural apparatus, live
+                       kymograph tracings and viva questions throughout.</p>
+                </div>
+                <div class="roadmap-item">
+                    <span class="phase">Phase 2 · In progress</span>
+                    <h4>Classroom tooling</h4>
+                    <p>Printable observation sheets, assessment mode and institution-level progress tracking for
+                       laboratory coursework.</p>
+                </div>
+                <div class="roadmap-item next">
+                    <span class="phase">Phase 3 · Seeking funding</span>
+                    <h4>PharmVR 3D / VR</h4>
+                    <p>A full immersive virtual-reality pharmacology laboratory built on the same validated
+                       simulation core. Partners and funders welcome.</p>
+                </div>
+            </div>
+
+            <p class="about-note" style="text-align:center;margin-top:26px">
+                Syllabus reference: HEB-NIC Experimental Pharmacology Lab Manual (2025 edition)
+            </p>
         </section>
 
         <footer class="footer">
-            <p>PharmVR 2D Beta — ExPharm Alternative © 2026 | Free & Open Access | Built for Pharmacy & Medical Students</p>
-            <p style="margin-top: 0.5rem; font-size: 0.9rem; opacity: 0.8;">Created by <a href="https://www.linkedin.com/in/karthik-thiyagarajan/" target="_blank" style="color: inherit; text-decoration: underline;">Karthik Thiyagarajan</a> | <a href="https://www.linkedin.com/in/karthik-thiyagarajan/" target="_blank" style="color: inherit; text-decoration: underline;">LinkedIn</a></p>
+            <img class="footer-logo" src="assets/pharmvr-logo.png" alt="PharmVR" draggable="false">
+            <p>The interactive pharmacology laboratory — free for students and educators everywhere.</p>
+            <p style="margin-top:10px">
+                Created by <a href="https://www.linkedin.com/in/karthik-thiyagarajan/" target="_blank" rel="noopener">Dr. Karthik Thiyagarajan, Pharm.D</a>
+                · <a href="https://www.linkedin.com/in/karthik-thiyagarajan/" target="_blank" rel="noopener">LinkedIn</a>
+                · <a href="https://www.preprints.org/manuscript/202507.0959" target="_blank" rel="noopener">Research preprint</a>
+            </p>
+            <div class="footer-legal">
+                © 2026 Dr. Karthik Thiyagarajan. All rights reserved.<br>
+                PharmVR, the PharmVR logo and all simulations, artwork, text and source code on this site are the
+                property of the author and are protected by copyright. Free to <strong>use</strong> for personal study
+                and classroom teaching. This is <strong>not</strong> open-source software: copying, redistributing,
+                modifying, reverse-engineering or hosting this work elsewhere, in whole or in part, is not permitted
+                without written permission.
+            </div>
         </footer>
     </div>
 
@@ -554,17 +601,13 @@
     </div>
 
     <!-- Scripts -->
+    <script src="js/protect.js"></script>
     <script src="js/svg-assets.js"></script>
     <script src="js/drag-game.js"></script>
     <script src="js/pharmacology.js"></script>
     <script src="js/renderer.js"></script>
     <script src="js/experiments-data.js"></script>
     <script src="js/tutorial.js"></script>
-    <script src="js/engines/cns-engine.js"></script>
-    <script src="js/engines/tissue-engine.js"></script>
-    <script src="js/engines/bioassay-engine.js"></script>
-    <script src="js/engines/cardio-engine.js"></script>
-    <script src="js/engines/special-engine.js"></script>
     <script src="js/lab/core.js"></script>
     <script src="js/lab/rodent.js"></script>
     <script src="js/lab/guineapig.js"></script>

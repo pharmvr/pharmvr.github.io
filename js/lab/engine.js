@@ -56,6 +56,7 @@
             this.mount.innerHTML = `
             <div class="lab2">
               <aside class="lab2-col lab2-left">
+                <div class="lab2-scroll">
                 <section class="lab2-card">
                   <div class="lab2-card-h"><span>Protocol</span><span class="lab2-pill" id="l2-stepcount"></span></div>
                   <ol class="lab2-steps" id="l2-steps">${c.steps.map((s, i) => `<li data-i="${i}"><span class="lab2-stepnum">${i + 1}</span><span>${s}</span></li>`).join('')}</ol>
@@ -72,6 +73,7 @@
                   </div>
                 </section>` : ''}
                 <section class="lab2-card" id="l2-ctrl-card" style="display:none"><div id="l2-ctrl"></div></section>
+                </div>
                 <div class="lab2-btnrow">
                   <button class="lab2-btn ghost" id="l2-reset">↺ Fresh animal</button>
                   <button class="lab2-btn ghost" id="l2-viva">🎓 Viva voce</button>
@@ -91,6 +93,7 @@
                 </div>
               </main>
               <aside class="lab2-col lab2-right">
+                <div class="lab2-scroll">
                 <section class="lab2-card">
                   <div class="lab2-card-h"><span>${c.tableTitle || 'Observation table'}</span><span class="lab2-pill" id="l2-rowcount">0</span></div>
                   <div class="lab2-table-wrap"><table class="lab2-table"><thead><tr>${c.table.map(h => `<th>${h}</th>`).join('')}</tr></thead><tbody id="l2-tbody"><tr class="empty"><td colspan="${c.table.length || 1}">No readings yet</td></tr></tbody></table></div>
@@ -100,6 +103,7 @@
                   <div class="lab2-card-h"><span>Inference</span></div>
                   <div class="lab2-infer" id="l2-infer">${c.inferenceHint || 'Complete the protocol to draw a pharmacological conclusion.'}</div>
                 </section>
+                </div>
               </aside>
             </div>`;
             const $ = id => this.mount.querySelector('#' + id);

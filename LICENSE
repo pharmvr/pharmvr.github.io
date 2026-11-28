@@ -1,0 +1,48 @@
+PharmVR — Proprietary Licence
+Copyright © 2026 Dr. Karthik Thiyagarajan, Pharm.D. All rights reserved.
+
+This is NOT open-source software. The software is free to USE; it is not free
+to copy, redistribute or modify.
+
+1. DEFINITIONS
+   "The Work" means the PharmVR website and application, including all source
+   code, simulation engines, pharmacological models, artwork, logos, text,
+   assessment questions and documentation published at https://pharmvr.github.io
+   and in this repository.
+
+2. PERMITTED USE
+   You may, free of charge and without registration:
+   (a) access and use the Work through its official website for personal study,
+       private research, teaching and classroom demonstration;
+   (b) link to the Work;
+   (c) cite the Work in academic writing, with attribution to the author.
+
+3. RESTRICTIONS
+   Except as expressly permitted in section 2, you may NOT, without the prior
+   written permission of the copyright holder:
+   (a) copy, download, mirror, re-host, redistribute or publish the Work or any
+       part of it, including its source code, assets or compiled output;
+   (b) modify, adapt, translate or create derivative works from it;
+   (c) reverse-engineer, decompile or disassemble it, or extract its simulation
+       models or data for use in any other product;
+   (d) use the Work or any part of it for commercial purposes, including resale,
+       paid courses, or inclusion in any paid product or service;
+   (e) remove, obscure or alter any copyright, trademark or attribution notice;
+   (f) use the Work to train, fine-tune or evaluate machine-learning models.
+
+4. TRADE MARKS
+   "PharmVR", the PharmVR name and the PharmVR logo are trade marks of the
+   copyright holder. No licence to use them is granted by this document.
+
+5. NO WARRANTY
+   The Work is provided "as is", without warranty of any kind, express or
+   implied. It is an educational simulation and is NOT a substitute for
+   laboratory training, clinical judgement or professional medical advice. The
+   author accepts no liability for any claim, damage or other liability arising
+   from the Work or its use.
+
+6. RESERVATION OF RIGHTS
+   All rights not expressly granted here are reserved by the copyright holder.
+
+Permission requests and licensing enquiries:
+https://www.linkedin.com/in/karthik-thiyagarajan/

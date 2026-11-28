@@ -149,17 +149,7 @@ function launchExperiment(expNum) {
         activeUniversalEngine = new LAB.registry[expNum](expNum, mount);
         return;
     }
-    if ([1, 2, 3, 5, 6, 7, 9].includes(expNum)) {
-        activeUniversalEngine = new CNSEngine(expNum, mount);
-    } else if ([10, 11, 22].includes(expNum)) {
-        activeUniversalEngine = new TissueEngine(expNum, mount);
-    } else if ([13, 14, 15, 16, 17, 31].includes(expNum)) {
-        activeUniversalEngine = new BioassayEngine(expNum, mount);
-    } else if ([12, 18, 19, 20].includes(expNum)) {
-        activeUniversalEngine = new CardioEngine(expNum, mount);
-    } else {
-        activeUniversalEngine = new SpecialEngine(expNum, mount);
-    }
+    mount.innerHTML = '<div style="padding:48px;text-align:center;color:#64748b">This experiment is not available.</div>';
 }
 
 function goHome() {
