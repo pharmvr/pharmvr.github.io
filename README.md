@@ -56,7 +56,7 @@ outflow above the force tracing.
 
 </td><td width="50%">
 
-*`docs/kymograph.gif` — organ bath, cumulative histamine staircase*
+
 
 </td></tr>
 <tr><td width="50%">
@@ -69,14 +69,11 @@ student's own readings.
 
 </td><td width="50%">
 
-*`docs/schild.gif` — four curves, regression, pA₂ readout*
+
 
 </td></tr>
 </table>
 
-> **Note** — the two GIFs above are placeholders. Record them from the live site
-> (exp 14 for the kymograph staircase, exp 15 for the Schild plot), save as
-> `docs/kymograph.gif` and `docs/schild.gif`, and they will appear here.
 
 ## The 31 experiments
 
