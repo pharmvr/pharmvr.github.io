@@ -367,9 +367,45 @@ img, canvas, svg, video {
 .lab2-lapse-t b { color: var(--blue-300); }
 .lab2-lapse-bar i { background: linear-gradient(90deg, #15306B, #5FC2FF); }
 
-/* lab header bar */
-.lab-topbar { background: var(--brand-grad); border-bottom: none; }
-.lab-topbar .lab-title, .lab-topbar a, .lab-topbar button { color: #EAF3FF; }
+/* ---------- lab header bar (shared by all 31 experiments) ----------
+   The bar is now a dark navy gradient, so everything on it has to be
+   light. The title is a plain <span>, which the earlier rule missed. */
+.lab-topbar {
+    background: var(--brand-grad);
+    border-bottom: 1px solid rgba(95, 194, 255, 0.22);
+    color: #EAF3FF;
+}
+.lab-topbar,
+.lab-topbar * { color: #EAF3FF; }
+
+.lab-topbar .exp-title-text {
+    color: #FFFFFF;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+}
+.lab-topbar .exp-badge {
+    background: rgba(255, 255, 255, 0.16);
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    color: #FFFFFF;
+    font-weight: 800;
+}
+.lab-topbar .exp-status,
+.lab-topbar .exp-status.live {
+    background: rgba(95, 194, 255, 0.18);
+    border: 1px solid rgba(95, 194, 255, 0.4);
+    color: #BFE4FF;
+}
+.lab-topbar .btn-back {
+    background: rgba(255, 255, 255, 0.10);
+    border: 1px solid rgba(255, 255, 255, 0.24);
+    color: #EAF3FF;
+}
+.lab-topbar .btn-back:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.45);
+    color: #FFFFFF;
+}
+.lab-topbar svg { stroke: currentColor; }
 
 @media (max-width: 1280px) {
     .lab2 { height: auto; overflow: visible; grid-template-columns: 258px minmax(0, 1fr); }
