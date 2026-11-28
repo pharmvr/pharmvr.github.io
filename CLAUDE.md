@@ -151,13 +151,9 @@ Also: `LAB.M` (clamp lerp rand randn gauss approach smooth noise1 mean sem **lin
 
 ## Status
 
-Built (25): 1 2 3 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 22 23 24 25 26 31
-Remaining (6): 4 21 27 28 29 30
-
-All the apparatus-heavy experiments are done. The remaining six are assorted
-small rigs: 4 (histamine aerosol chamber), 21 (guinea pig wheal), 27
-(hypoglycaemia), 28 (charcoal meal), 29 (CuSO₄ emesis), 30 (ciliary motility).
-27 and 28 reuse the rodent pattern of exps 24–26.
+All 31 experiments are built. The legacy `js/engines/*.js` dispatch in app.js is
+now unreachable, and the large JPEG backdrops are referenced only from there —
+both can be deleted, but verify with a grep first.
 
 Once 4, 21, 27–30 are rebuilt, the whole legacy `js/engines/` layer and about
 3 MB of JPEG backdrops can be deleted — they are only referenced from there.
